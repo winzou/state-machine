@@ -9,7 +9,7 @@ class DummyObject
 
     }
 
-    public function setState()
+    public function setState($state)
     {
 
     }
