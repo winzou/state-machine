@@ -11,8 +11,6 @@
 
 namespace SM\Callback;
 
-use SM\Callback\CallbackInterface;
-
 interface CallbackFactoryInterface
 {
     /**

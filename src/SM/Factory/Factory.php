@@ -11,7 +11,6 @@
 
 namespace SM\Factory;
 
-
 use SM\Callback\CallbackFactoryInterface;
 use SM\SMException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
