@@ -201,7 +201,7 @@ class StateMachine implements StateMachineInterface
         }
 
         $accessor = new PropertyAccessor();
-        return $accessor->setValue($this->object, $this->config['property_path'], $state);
+        $accessor->setValue($this->object, $this->config['property_path'], $state);
     }
 
     /**
