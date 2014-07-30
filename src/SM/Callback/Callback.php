@@ -100,6 +100,10 @@ class Callback implements CallbackInterface
      */
     protected function isSatisfiedByClause($clause, $value)
     {
+        if ( $clause == 'on' && in_array('all_transitions', $this->specs[$clause]) ) {
+            return true;
+        }
+
         if (0 < count($this->specs[$clause]) && !in_array($value, $this->specs[$clause])) {
             return false;
         }
