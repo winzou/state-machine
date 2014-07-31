@@ -42,8 +42,8 @@ class StateMachineSpec extends ObjectBehavior
                     'on' => array('confirm'),
                     'do' => 'dummy'
                 ),
-                'to-cancel' => array(
-                    'to' => array('cancel'),
+                'to-cancelled' => array(
+                    'to' => array('cancelled'),
                     'do' => 'dummy'
                 )
             )
@@ -102,7 +102,7 @@ class StateMachineSpec extends ObjectBehavior
 
         $callbackFactory->get($this->config['callbacks']['before']['from-checkout'])->shouldBeCalled()->willReturn($callback1);
         $callbackFactory->get($this->config['callbacks']['after']['on-confirm'])->shouldBeCalled()->willReturn($callback2);
-        $callbackFactory->get($this->config['callbacks']['after']['to-cancel'])->shouldBeCalled()->willReturn($callback3);
+        $callbackFactory->get($this->config['callbacks']['after']['to-cancelled'])->shouldBeCalled()->willReturn($callback3);
 
         $callback1->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
         $callback2->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
