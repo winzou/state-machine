@@ -11,6 +11,7 @@
 
 namespace SM\StateMachine;
 
+use SM\Callback\CallbackFactory;
 use SM\Callback\CallbackFactoryInterface;
 use SM\Callback\CallbackInterface;
 use SM\Event\SMEvents;
@@ -42,15 +43,23 @@ class StateMachine implements StateMachineInterface
      */
     protected $callbackFactory;
 
+    /**
+     * @param object                   $object          Underlying object for the state machine
+     * @param array                    $config          Config array of the graph
+     * @param EventDispatcherInterface $dispatcher      EventDispatcher or null not to dispatch events
+     * @param CallbackFactoryInterface $callbackFactory CallbackFactory or null to use the default one
+     *
+     * @throws SMException If object doesn't have configured property path for state
+     */
     public function __construct(
         $object,
         array $config,
-        EventDispatcherInterface $dispatcher,
-        CallbackFactoryInterface $callbackFactory
+        EventDispatcherInterface $dispatcher      = null,
+        CallbackFactoryInterface $callbackFactory = null
     ) {
-        $this->object = $object;
-        $this->dispatcher = $dispatcher;
-        $this->callbackFactory = $callbackFactory;
+        $this->object          = $object;
+        $this->dispatcher      = $dispatcher;
+        $this->callbackFactory = $callbackFactory ?: new CallbackFactory('SM\Callback\Callback');
 
         if (!isset($config['property_path'])) {
             $config['property_path'] = 'state';
@@ -89,10 +98,14 @@ class StateMachine implements StateMachineInterface
             return false;
         }
 
-        $event = new TransitionEvent($transition, $this->config['transitions'][$transition], $this);
-        $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
+        if (null !== $this->dispatcher) {
+            $event = new TransitionEvent($transition, $this->config['transitions'][$transition], $this);
+            $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
 
-        return !$event->isRejected();
+            return !$event->isRejected();
+        }
+
+        return true;
     }
 
     /**
@@ -115,13 +128,20 @@ class StateMachine implements StateMachineInterface
         }
 
         $event = new TransitionEvent($transition, $this->config['transitions'][$transition], $this);
-        $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
+
+        if (null !== $this->dispatcher) {
+            $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
+        }
+
         $this->callCallbacks($event, 'before');
 
         $this->setState($this->config['transitions'][$transition]['to']);
 
         $this->callCallbacks($event, 'after');
-        $this->dispatcher->dispatch(SMEvents::POST_TRANSITION, $event);
+
+        if (null !== $this->dispatcher) {
+            $this->dispatcher->dispatch(SMEvents::POST_TRANSITION, $event);
+        }
 
         return true;
     }
