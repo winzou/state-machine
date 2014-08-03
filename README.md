@@ -87,9 +87,9 @@ Please refer to the several examples in the `examples` folder.
 
 #### Callbacks
 
-Callbaks are used to execute some code before or after applying transitions.
+Callbacks are used to execute some code before or after applying transitions.
 
 
 ##### Credits
 
-This library has been highly inspired by [https://github.com/yohang/Finite](yohang/Finite), but has taken another direction.
+This library has been highly inspired by [https://github.com/yohang/Finite](https://github.com/yohang/Finite), but has taken another direction.
