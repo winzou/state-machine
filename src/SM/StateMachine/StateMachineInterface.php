@@ -30,13 +30,14 @@ interface StateMachineInterface
      * Applies the transition on the underlying object
      *
      * @param string $transition Transition to apply
+     * @param array  $data       Additional data to use when getting state
      * @param bool   $soft       Soft means do nothing if transition can't be applied (no exception thrown)
      *
      * @return bool If the transition has been applied or not (in case of soft apply)
      *
      * @throws SMException If transition can't be applied or doesn't exist
      */
-    public function apply($transition, $soft = false);
+    public function apply($transition, array $data = array(), $soft = false);
 
     /**
      * Returns the current state

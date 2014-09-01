@@ -111,7 +111,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function apply($transition, $soft = false)
+    public function apply($transition, array $data = array(), $soft = false)
     {
         if (!$this->can($transition)) {
             if ($soft) {
@@ -135,7 +135,9 @@ class StateMachine implements StateMachineInterface
 
         $this->callCallbacks($event, 'before');
 
-        $this->setState($this->config['transitions'][$transition]['to']);
+        $this->setState(
+            $this->getStateForTransition($transition, $data)
+        );
 
         $this->callCallbacks($event, 'after');
 
@@ -180,6 +182,11 @@ class StateMachine implements StateMachineInterface
             array_keys($this->config['transitions']),
             array($this, 'can')
         );
+    }
+
+    protected function getStateForTransition($transition, array $data = array())
+    {
+        return $this->config['transitions'][$transition]['to'];
     }
 
     /**
