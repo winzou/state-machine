@@ -99,7 +99,7 @@ class StateMachine implements StateMachineInterface
         }
 
         if (null !== $this->dispatcher) {
-            $event = new TransitionEvent($transition, $this->config['transitions'][$transition], $this);
+            $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
             $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
 
             return !$event->isRejected();
@@ -127,7 +127,7 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        $event = new TransitionEvent($transition, $this->config['transitions'][$transition], $this);
+        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
 
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);

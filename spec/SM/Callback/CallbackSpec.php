@@ -144,6 +144,18 @@ class CallbackSpec extends ObjectBehavior
         $this->isSatisfiedBy($event)->shouldReturn(false);
     }
 
+    function it_doesnt_satisfies_excluded_from(TransitionEvent $event)
+    {
+        $specs = array('to' => 'tested-state-to', 'excluded_from' => 'tested-state-from');
+        $this->beConstructedWith($specs, $this->callable);
+
+        $event->getConfig()->willReturn($this->getConfig(array('tested-state-from'), 'tested-state-to'));
+        $event->getTransition()->willReturn('dummy');
+        $event->getState()->willReturn('tested-state-from');
+
+        $this->isSatisfiedBy($event)->shouldReturn(false);
+    }
+
     protected function getConfig($from = array(), $to)
     {
         return array('from' => $from, 'to' => $to);

@@ -22,6 +22,11 @@ class TransitionEvent extends Event
     protected $transition;
 
     /**
+     * @var string
+     */
+    protected $fromState;
+
+    /**
      * @var array
      */
     protected $config;
@@ -38,12 +43,14 @@ class TransitionEvent extends Event
 
     /**
      * @param string                $transition   Name of the transition being applied
+     * @param string                $fromState    State from which the transition is applied
      * @param array                 $config       Configuration of the transition
      * @param StateMachineInterface $stateMachine State machine
      */
-    public function __construct($transition, array $config, StateMachineInterface $stateMachine)
+    public function __construct($transition, $fromState, array $config, StateMachineInterface $stateMachine)
     {
         $this->transition   = $transition;
+        $this->fromState    = $fromState;
         $this->config       = $config;
         $this->stateMachine = $stateMachine;
     }
