@@ -84,7 +84,7 @@ class TransitionEvent extends Event
      */
     public function getState()
     {
-        return $this->stateMachine->getState();
+        return $this->fromState;
     }
 
     /**
