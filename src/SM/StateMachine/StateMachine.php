@@ -221,7 +221,7 @@ class StateMachine implements StateMachineInterface
                 $callback = $this->callbackFactory->get($callback);
             }
 
-            $callback($event);
+            call_user_func($callback, $event);
         }
     }
 }
