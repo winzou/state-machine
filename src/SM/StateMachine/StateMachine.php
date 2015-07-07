@@ -65,6 +65,10 @@ class StateMachine implements StateMachineInterface
             $config['property_path'] = 'state';
         }
 
+        if (!isset($config['ignore_before_callback_result'])) {
+            $config['ignore_before_callback_result'] = true;
+        }
+
         $this->config = $config;
 
         // Test if the given object has the given state property path
@@ -72,7 +76,7 @@ class StateMachine implements StateMachineInterface
             $this->getState();
         } catch (NoSuchPropertyException $e) {
             throw new SMException(sprintf(
-               'Cannot access to configured property path %s on object %s with graph %s',
+                'Cannot access to configured property path %s on object %s with graph %s',
                 $config['property_path'],
                 get_class($object),
                 $config['graph']
@@ -133,7 +137,24 @@ class StateMachine implements StateMachineInterface
             $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
         }
 
-        $this->callCallbacks($event, 'before');
+        if (false === ($callbackResult = $this->callCallbacks($event, 'before'))
+            && false === $this->config['ignore_before_callback_result']
+        ) {
+            if (!isset($this->config['transitions'][$transition]['on_fail'])
+                || false === $this->config['transitions'][$transition]['on_fail']
+            ) {
+                throw new SMException(sprintf(
+                    'Missing "on_fail" option in transition %s to object %s on graph %s.',
+                    $transition,
+                    get_class($this->object),
+                    $this->config['graph']
+                ));
+            }
+
+            $this->setState($this->config['transitions'][$transition]['on_fail']);
+
+            return false;
+        }
 
         $this->setState($this->config['transitions'][$transition]['to']);
 
@@ -209,11 +230,14 @@ class StateMachine implements StateMachineInterface
      *
      * @param TransitionEvent $event
      * @param string          $position
+     *
+     * @return true
      */
     protected function callCallbacks(TransitionEvent $event, $position)
     {
+        $result = true;
         if (!isset($this->config['callbacks'][$position])) {
-            return;
+            return $result;
         }
 
         foreach ($this->config['callbacks'][$position] as &$callback) {
@@ -221,7 +245,11 @@ class StateMachine implements StateMachineInterface
                 $callback = $this->callbackFactory->get($callback);
             }
 
-            call_user_func($callback, $event);
+            if (null !== $callbackResult = call_user_func($callback, $event)) {
+                $result = $result && $callbackResult;
+            }
         }
+
+        return $result;
     }
 }
