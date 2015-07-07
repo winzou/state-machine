@@ -111,6 +111,52 @@ class StateMachineSpec extends ObjectBehavior
         $this->apply('confirm');
     }
 
+    function it_applies_transition_ignoring_callback_before_as_false_with_on_fail_valid(
+        $object,
+        $dispatcher,
+        $callbackFactory,
+        CallbackInterface $callback
+    ) {
+        $config = $this->config;
+        $config['ignore_before_callback_result'] = false;
+        $config['transitions']['confirm']['on_fail'] = 'pending';
+
+        $this->beConstructedWith($object, $config, $dispatcher, $callbackFactory);
+
+        $object->getState()->shouldBeCalled()->willReturn('checkout');
+        $object->setState('pending')->shouldBeCalled();
+
+        $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+        $dispatcher->dispatch(SMEvents::PRE_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+        $callbackFactory->get($config['callbacks']['before']['from-checkout'])->shouldBeCalled()->willReturn($callback);
+
+        $callback->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(false);
+
+        $this->apply('confirm');
+    }
+
+    function it_throws_exception_if_ignoring_callback_before_is_true_and_on_fail_not_defined(
+        $object,
+        $dispatcher,
+        $callbackFactory,
+        CallbackInterface $callback
+    ) {
+        $config = $this->config;
+        $config['ignore_before_callback_result'] = false;
+
+        $this->beConstructedWith($object, $config, $dispatcher, $callbackFactory);
+
+        $object->getState()->shouldBeCalled()->willReturn('checkout');
+
+        $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+        $dispatcher->dispatch(SMEvents::PRE_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+        $callbackFactory->get($config['callbacks']['before']['from-checkout'])->shouldBeCalled()->willReturn($callback);
+
+        $callback->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(false);
+
+        $this->shouldThrow('SM\\SMException')->during('apply', array('confirm'));
+    }
+
     function it_throws_an_exception_if_transition_cannot_be_applied($object, $dispatcher)
     {
         $object->getState()->shouldBeCalled()->willReturn('cancel');
