@@ -34,7 +34,7 @@ class SMExtension extends \Twig_Extension
     public function getFunctions()
     {
         return array(
-            'sm_can' => new \Twig_Function_Method($this, 'can'),
+            new \Twig_SimpleFunction('sm_can', array($this, 'can')),
         );
     }
 
