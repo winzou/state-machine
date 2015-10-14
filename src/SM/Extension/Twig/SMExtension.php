@@ -35,6 +35,8 @@ class SMExtension extends \Twig_Extension
     {
         return array(
             new \Twig_SimpleFunction('sm_can', array($this, 'can')),
+            new \Twig_SimpleFunction('sm_state', array($this, 'getState')),
+            new \Twig_SimpleFunction('sm_possible_transitions', array($this, 'getPossibleTransitions')),
         );
     }
 
@@ -48,6 +50,28 @@ class SMExtension extends \Twig_Extension
     public function can($object, $transition, $graph = 'default')
     {
         return $this->factory->get($object, $graph)->can($transition);
+    }
+
+    /**
+     * @param object $object
+     * @param string $graph
+     *
+     * @return string
+     */
+    public function getState($object, $graph = 'default')
+    {
+        return $this->factory->get($object, $graph)->getState();
+    }
+
+    /**
+     * @param object $object
+     * @param string $graph
+     *
+     * @return array
+     */
+    public function getPossibleTransitions($object, $graph = 'default')
+    {
+        return $this->factory->get($object, $graph)->getPossibleTransitions();
     }
 
     /**
