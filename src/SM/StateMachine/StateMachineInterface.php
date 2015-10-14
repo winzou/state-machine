@@ -32,7 +32,7 @@ interface StateMachineInterface
      * @param string $transition Transition to apply
      * @param bool   $soft       Soft means do nothing if transition can't be applied (no exception thrown)
      *
-     * @return bool If the transition has been applied or not (in case of soft apply)
+     * @return bool If the transition has been applied or not (in case of soft apply or rejected pre transition event)
      *
      * @throws SMException If transition can't be applied or doesn't exist
      */
