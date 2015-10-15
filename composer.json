@@ -18,8 +18,12 @@
         "symfony/property-access":     "~2.1",
         "symfony/expression-language": "~2.4"
     },
+    "suggest": {
+        "twig/twig": "Access the state machine in your twig templates (~1.0)"
+    },
     "require-dev": {
-        "phpspec/phpspec": "~2.0"
+        "phpspec/phpspec": "~2.0",
+        "twig/twig": "~1.0"
     },
     "autoload": {
         "psr-0": { "SM": "src/" }
