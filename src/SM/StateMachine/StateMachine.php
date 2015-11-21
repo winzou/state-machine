@@ -131,6 +131,10 @@ class StateMachine implements StateMachineInterface
 
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
+
+            if ($event->isRejected()) {
+                return false;
+            }
         }
 
         $this->callCallbacks($event, 'before');
