@@ -1,3 +1,5 @@
+sudo: false
+
 branches:
     only:
         - master
@@ -11,6 +13,11 @@ php:
     - 5.6
     - 7.0
     - hhvm
+
+cache:
+    directories:
+        - vendor
+        - $HOME/.composer/cache
 
 before_script:
     - composer --no-interaction --prefer-source install
