@@ -187,6 +187,23 @@ class StateMachine implements StateMachineInterface
     }
 
     /**
+     * Returns the possible states
+     *
+     * @return array
+     */
+    public function getPossibleStates()
+    {
+        $states = array();
+        $transitions = $this->getPossibleTransitions();
+
+        foreach ($transitions as $transition) {
+            $states[] = $this->config['transitions'][$transition]['to'];
+        }
+
+        return $states;
+    }
+
+    /**
      * Set a new state to the underlying object
      *
      * @param string $state

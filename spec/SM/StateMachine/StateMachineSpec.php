@@ -159,4 +159,11 @@ class StateMachineSpec extends ObjectBehavior
 
         $this->getPossibleTransitions()->shouldReturn(array('create', 'confirm'));
     }
+
+    function it_returns_possible_states($object)
+    {
+        $object->getState()->willReturn('checkout');
+
+        $this->getPossibleStates()->shouldReturn(array('pending', 'confirmed'));
+    }
 }
