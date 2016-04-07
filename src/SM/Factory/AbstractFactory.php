@@ -59,6 +59,14 @@ abstract class AbstractFactory implements FactoryInterface
             $graph
         ));
     }
+    
+    /**
+     * {@inheritDoc}
+     */
+    public function clear()
+    {
+        $this->stateMachines = array();
+    }
 
     /**
      * Adds a new config
