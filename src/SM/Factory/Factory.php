@@ -49,7 +49,7 @@ class Factory extends AbstractFactory
             $class = $config['state_machine_class'];
         } else {
             throw new SMException(sprintf(
-               'Class %s for creating a new state machine does not exist.',
+               'Class "%s" for creating a new state machine does not exist.',
                 $config['state_machine_class']
             ));
         }
