@@ -72,7 +72,7 @@ class StateMachine implements StateMachineInterface
             $this->getState();
         } catch (NoSuchPropertyException $e) {
             throw new SMException(sprintf(
-               'Cannot access to configured property path %s on object %s with graph %s',
+               'Cannot access to configured property path "%s" on object %s with graph "%s"',
                 $config['property_path'],
                 get_class($object),
                 $config['graph']
@@ -87,7 +87,7 @@ class StateMachine implements StateMachineInterface
     {
         if (!isset($this->config['transitions'][$transition])) {
             throw new SMException(sprintf(
-                'Transition %s does not exist on object %s with graph %s',
+                'Transition "%s" does not exist on object "%s" with graph "%s"',
                 $transition,
                 get_class($this->object),
                 $this->config['graph']
@@ -119,7 +119,7 @@ class StateMachine implements StateMachineInterface
             }
 
             throw new SMException(sprintf(
-                'Transition %s cannot be applied on state %s of object %s with graph %s',
+                'Transition "%s" cannot be applied on state "%s" of object "%s" with graph "%s"',
                 $transition,
                 $this->getState(),
                 get_class($this->object),
@@ -197,7 +197,7 @@ class StateMachine implements StateMachineInterface
     {
         if (!in_array($state, $this->config['states'])) {
             throw new SMException(sprintf(
-                'Cannot set the state to %s to object %s with graph %s because it is not pre-defined.',
+                'Cannot set the state to "%s" to object "%s" with graph %s because it is not pre-defined.',
                 $state,
                 get_class($this->object),
                 $this->config['graph']

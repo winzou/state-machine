@@ -54,7 +54,7 @@ abstract class AbstractFactory implements FactoryInterface
         }
 
         throw new SMException(sprintf(
-            'Cannot create a state machine because the configuration for object %s with graph %s does not exist.',
+            'Cannot create a state machine because the configuration for object "%s" with graph "%s" does not exist.',
             get_class($object),
             $graph
         ));
@@ -76,7 +76,7 @@ abstract class AbstractFactory implements FactoryInterface
 
         if (!isset($config['class'])) {
             throw new SMException(sprintf(
-               'Index "class" needed for the state machine configuration of graph %s',
+               'Index "class" needed for the state machine configuration of graph "%s"',
                 $config['graph']
             ));
         }
