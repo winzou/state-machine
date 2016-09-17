@@ -31,6 +31,12 @@ class StateMachineSpec extends ObjectBehavior
             )
         ),
         'callbacks' => array(
+            'guard' => array(
+                'guard-confirm' => array(
+                    'from' => array('pending'),
+                    'do' => 'dummy'
+                )
+            ),
             'before' => array(
                 'from-checkout' => array(
                     'from' => array('checkout'),
@@ -60,12 +66,16 @@ class StateMachineSpec extends ObjectBehavior
         $this->shouldHaveType('SM\StateMachine\StateMachine');
     }
 
-    function it_can($object, $dispatcher)
+    function it_can($object, $dispatcher, $callbackFactory, CallbackInterface $guard)
     {
         $object->getState()->shouldBeCalled()->willReturn('checkout');
         $object->setState(Argument::any())->shouldNotBeCalled();
 
         $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
+
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(true);
 
         $this->can('create')->shouldReturn(true);
     }
@@ -80,6 +90,34 @@ class StateMachineSpec extends ObjectBehavior
         $this->can('create')->shouldReturn(false);
     }
 
+    function it_is_guarded_and_can($object, $dispatcher, $callbackFactory, CallbackInterface $guard)
+    {
+        $object->getState()->shouldBeCalled()->willReturn('pending');
+        $object->setState(Argument::any())->shouldNotBeCalled();
+
+        $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
+
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(true);
+
+        $this->can('confirm')->shouldReturn(true);
+    }
+
+    function it_is_guarded_and_cannot($object, $dispatcher, $callbackFactory, CallbackInterface $guard)
+    {
+        $object->getState()->shouldBeCalled()->willReturn('pending');
+        $object->setState(Argument::any())->shouldNotBeCalled();
+
+        $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
+
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(false);
+
+        $this->can('confirm')->shouldReturn(false);
+    }
+
     function it_throws_an_exception_if_transition_doesnt_exist_on_can()
     {
         $this->shouldThrow('SM\\SMException')->during('can', array('non-existing-transition'));
@@ -89,6 +127,7 @@ class StateMachineSpec extends ObjectBehavior
         $object,
         $dispatcher,
         $callbackFactory,
+        CallbackInterface $guard,
         CallbackInterface $callback1,
         CallbackInterface $callback2,
         CallbackInterface $callback3
@@ -100,10 +139,12 @@ class StateMachineSpec extends ObjectBehavior
         $dispatcher->dispatch(SMEvents::PRE_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
         $dispatcher->dispatch(SMEvents::POST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
 
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
         $callbackFactory->get($this->config['callbacks']['before']['from-checkout'])->shouldBeCalled()->willReturn($callback1);
         $callbackFactory->get($this->config['callbacks']['after']['on-confirm'])->shouldBeCalled()->willReturn($callback2);
         $callbackFactory->get($this->config['callbacks']['after']['to-cancelled'])->shouldBeCalled()->willReturn($callback3);
 
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(true);
         $callback1->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
         $callback2->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
         $callback3->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
@@ -153,9 +194,13 @@ class StateMachineSpec extends ObjectBehavior
         $this->getObject()->shouldReturn($object);
     }
 
-    function it_returns_possible_transitions($object)
+    function it_returns_possible_transitions($object, $callbackFactory, CallbackInterface $guard)
     {
         $object->getState()->shouldBeCalled()->willReturn('checkout');
+
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
+
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(true);
 
         $this->getPossibleTransitions()->shouldReturn(array('create', 'confirm'));
     }

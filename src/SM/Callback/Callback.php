@@ -76,6 +76,7 @@ class Callback implements CallbackInterface
         if ($this->isSatisfiedBy($event)) {
             return $this->call($event);
         }
+        return true;
     }
 
     /**

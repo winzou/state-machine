@@ -51,6 +51,12 @@ $config = array(
         )
     ),
     'callbacks' => array(
+        'guard' => array(
+            'guard-cancel' => array(
+                'to' => array('cancelled'), // Will be called only for transitions going to this state
+                'do' => function() { var_dump('guarding to cancelled state'); return false; }
+            )
+        ),
         'before' => array(
             'from-checkout' => array(
                 'from' => array('checkout'), // Will be called only for transitions coming from this state
@@ -87,7 +93,9 @@ Please refer to the several examples in the `examples` folder.
 
 #### Callbacks
 
-Callbacks are used to execute some code before or after applying transitions.
+Callbacks are used to guard transitions or execute some code before or after applying transitions.
+
+Guarding callbacks must return a `bool`. If a guard returns `false`, a transition cannot be performed.
 
 
 ##### Credits
