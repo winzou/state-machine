@@ -14,7 +14,7 @@ namespace SM\Factory;
 use SM\SMException;
 use SM\StateMachine\StateMachineInterface;
 
-abstract class AbstractFactory implements FactoryInterface
+abstract class AbstractFactory implements ClearableFactoryInterface
 {
     /**
      * @var array
