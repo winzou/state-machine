@@ -218,17 +218,17 @@ class StateMachine implements StateMachineInterface
      */
     protected function callCallbacks(TransitionEvent $event, $position)
     {
-        $result = true;
         if (!isset($this->config['callbacks'][$position])) {
-            return $result;
+            return true;
         }
 
+        $result = true;
         foreach ($this->config['callbacks'][$position] as &$callback) {
             if (!$callback instanceof CallbackInterface) {
                 $callback = $this->callbackFactory->get($callback);
             }
 
-            $result = $result & call_user_func($callback, $event);
+            $result = call_user_func($callback, $event) && $result;
         }
         return $result;
     }
