@@ -36,6 +36,12 @@ $config = array(
         )
     ),
     'callbacks' => array(
+        'guard' => array(
+            'guard-cancel' => array(
+                'to' => array('cancelled'), // Will be called only for transitions going to this state
+                'do' => function() { var_dump('guarding to cancelled state'); return false; }
+            )
+        ),
         'before' => array(
             'from-checkout' => array(
                 'from' => array('checkout'), // Will be called only for transitions coming from this state
@@ -89,4 +95,10 @@ var_dump($stateMachine->getState());
 var_dump($stateMachine->apply('confirm'));
 
 // Current state is confirmed
+var_dump($stateMachine->getState());
+
+// Returns false, as it is guarded
+var_dump($stateMachine->can('cancel'));
+
+// Current state is still confirmed
 var_dump($stateMachine->getState());

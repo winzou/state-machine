@@ -98,14 +98,15 @@ class StateMachine implements StateMachineInterface
             return false;
         }
 
+        $can = true;
+        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
         if (null !== $this->dispatcher) {
-            $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
             $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
 
-            return !$event->isRejected();
+            $can = !$event->isRejected();
         }
 
-        return true;
+        return $can && $this->callCallbacks($event, 'guard');
     }
 
     /**
@@ -212,20 +213,23 @@ class StateMachine implements StateMachineInterface
      * Builds and calls the defined callbacks
      *
      * @param TransitionEvent $event
-     * @param string          $position
+     * @param string $position
+     * @return bool
      */
     protected function callCallbacks(TransitionEvent $event, $position)
     {
         if (!isset($this->config['callbacks'][$position])) {
-            return;
+            return true;
         }
 
+        $result = true;
         foreach ($this->config['callbacks'][$position] as &$callback) {
             if (!$callback instanceof CallbackInterface) {
                 $callback = $this->callbackFactory->get($callback);
             }
 
-            call_user_func($callback, $event);
+            $result = call_user_func($callback, $event) && $result;
         }
+        return $result;
     }
 }
