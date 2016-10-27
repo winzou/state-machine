@@ -50,7 +50,11 @@ $config = array(
             'to-cancelled' => array(
                 'to' => array('cancelled'), // Will be called only for transitions going to this state
                 'do' => function() { var_dump('to cancel transition'); }
-            )
+            ),
+            'confirm-date' => array(
+                'on' => array('confirm'),
+                'do' => array('object', 'setConfirmedNow'), // 'object' will be replaced by the object undergoing the transition
+            ),
         )
     )
 );
@@ -86,6 +90,7 @@ var_dump($stateMachine->getState());
 
 // Return true, this transition is applied
 // In addition, callback 'on-confirm' is called
+// And callback 'confirm-date' calls the method 'setConfirmedNow' on the object itself
 var_dump($stateMachine->apply('confirm'));
 
 // Current state is confirmed

@@ -65,7 +65,11 @@ $config = array(
             'to-cancelled' => array(
                 'to' => array('cancelled'), // Will be called only for transitions going to this state
                 'do' => function() { var_dump('to cancel transition'); }
-            )
+            ),
+            'cancel-date' => array(
+                'to' => array('cancelled'),
+                'do' => array('object', 'setCancelled'),
+            ),
         )
     )
 );
