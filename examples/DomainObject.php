@@ -33,4 +33,9 @@ class DomainObject
     {
         $this->stateB = $state;
     }
+
+    public function setConfirmedNow()
+    {
+        var_dump('I (the object) am set confirmed at '.date('Y-m-d').'.');
+    }
 }

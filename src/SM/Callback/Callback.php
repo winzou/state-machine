@@ -13,6 +13,7 @@ namespace SM\Callback;
 
 use SM\Event\TransitionEvent;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 
 class Callback implements CallbackInterface
 {
@@ -65,7 +66,9 @@ class Callback implements CallbackInterface
             );
         }
 
-        return call_user_func_array($this->callable, $args);
+        $callable = $this->filterCallable($this->callable, $event);
+
+        return call_user_func_array($callable, $args);
     }
 
     /**
@@ -110,5 +113,28 @@ class Callback implements CallbackInterface
         }
 
         return true;
+    }
+
+    /**
+     * @param callable|array  $callable A callable or array with index 0 starting with "object" that will evaluated as a property path with "object" being the object undergoing the transition
+     * @param TransitionEvent $event
+     *
+     * @return callable
+     */
+    protected function filterCallable($callable, TransitionEvent $event)
+    {
+        if (is_array($callable) && isset($callable[0]) && is_string($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
+            $object = $event->getStateMachine()->getObject();
+
+            // callable could be "object.property" and not just "object", so we evaluate the "property" path
+            if ('object' !== $callable[0]) {
+                $accessor = new PropertyAccessor();
+                $object = $accessor->getValue($object, substr($callable[0], 7));
+            }
+
+            return array($object, $callable[1]);
+        }
+
+        return $callable;
     }
 }
