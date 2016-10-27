@@ -122,7 +122,7 @@ class Callback implements CallbackInterface
      */
     protected function filterCallable($callable, TransitionEvent $event)
     {
-        if (is_array($callable) && isset($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
+        if (is_array($callable) && isset($callable[0]) && is_string($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
             $object = $event->getStateMachine()->getObject();
 
             // callable could be "object.property" and not just "object", so we evaluate the "property" path
