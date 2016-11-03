@@ -58,6 +58,10 @@ class Callback implements CallbackInterface
             $expr = new ExpressionLanguage();
             $args = array_map(
                 function($arg) use($expr, $event) {
+                    if (!is_string($arg)) {
+                        return $arg;
+                    }
+
                     return $expr->evaluate($arg, array(
                         'object' => $event->getStateMachine()->getObject(),
                         'event'  => $event
