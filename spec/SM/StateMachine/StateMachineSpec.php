@@ -123,6 +123,11 @@ class StateMachineSpec extends ObjectBehavior
         $this->shouldThrow('SM\\SMException')->during('can', array('non-existing-transition'));
     }
 
+    function it_does_nothing_if_transition_doesnt_exist_in_soft_mode()
+    {
+        $this->can('foobar', true)->shouldReturn(false);
+    }
+
     function it_applies_transition(
         $object,
         $dispatcher,
@@ -175,6 +180,11 @@ class StateMachineSpec extends ObjectBehavior
     function it_throws_an_exception_if_transition_doesnt_exist_on_apply()
     {
         $this->shouldThrow('SM\\SMException')->during('apply', array('non-existing-transition'));
+    }
+
+    function it_does_nothing_if_transition_doesnt_exist_on_apply_in_soft_mode()
+    {
+        $this->apply('foobar', true)->shouldReturn(false);
     }
 
     function it_returns_current_state($object)

@@ -83,9 +83,14 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function can($transition)
+    public function can($transition, $soft = false)
     {
         if (!isset($this->config['transitions'][$transition])) {
+
+            if($soft) {
+                return false;
+            }
+
             throw new SMException(sprintf(
                 'Transition "%s" does not exist on object "%s" with graph "%s"',
                 $transition,
@@ -114,7 +119,7 @@ class StateMachine implements StateMachineInterface
      */
     public function apply($transition, $soft = false)
     {
-        if (!$this->can($transition)) {
+        if (!$this->can($transition, $soft)) {
             if ($soft) {
                 return false;
             }
