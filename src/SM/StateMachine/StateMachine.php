@@ -156,8 +156,9 @@ class StateMachine implements StateMachineInterface
      */
     public function getState()
     {
-        $accessor = new PropertyAccessor();
-        return $accessor->getValue($this->object, $this->config['property_path']);
+	return $this->object->{$this->config['property_path']};
+        // $accessor = new PropertyAccessor();
+        // return $accessor->getValue($this->object, $this->config['property_path']);
     }
 
     /**
@@ -205,8 +206,9 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        $accessor = new PropertyAccessor();
-        $accessor->setValue($this->object, $this->config['property_path'], $state);
+	$this->object->{$this->config['property_path']} = $state;
+        // $accessor = new PropertyAccessor();
+        // $accessor->setValue($this->object, $this->config['property_path'], $state);
     }
 
     /**
