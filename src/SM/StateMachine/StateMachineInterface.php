@@ -53,6 +53,13 @@ interface StateMachineInterface
     public function getObject();
 
     /**
+     * Returns the whole config
+     *
+     * @return object
+     */
+    public function getConfig($key = null);
+
+    /**
      * Returns the current graph
      *
      * @return string
