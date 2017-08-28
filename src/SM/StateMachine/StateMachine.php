@@ -94,12 +94,12 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        if (!in_array($this->getState(), $this->config['transitions'][$transition]['from'])) {
-            return false;
-        }
+        $transitionConfig = $this->getTransitionFromState($transition);
 
         $can = true;
-        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
+
+        $event = new TransitionEvent($transition, $this->getState(), $transitionConfig, $this);
+
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
 
@@ -128,7 +128,9 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
+        $transitionConfig = $this->getTransitionFromState($transition);
+
+        $event = new TransitionEvent($transition, $this->getState(), $transitionConfig, $this);
 
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
@@ -140,7 +142,7 @@ class StateMachine implements StateMachineInterface
 
         $this->callCallbacks($event, 'before');
 
-        $this->setState($this->config['transitions'][$transition]['to']);
+        $this->setState($transitionConfig['to']);
 
         $this->callCallbacks($event, 'after');
 
@@ -218,18 +220,67 @@ class StateMachine implements StateMachineInterface
      */
     protected function callCallbacks(TransitionEvent $event, $position)
     {
-        if (!isset($this->config['callbacks'][$position])) {
-            return true;
+        $callbacks = [];
+
+        // Callbacks can come from two places. Either they are set on the
+        // specific transition or the can be set in a more general callbacks
+        // array. Somewhat arbitrarily I have chosen to always execute the
+        // more specific callbacks first and then the global ones.
+        if (isset($event->getConfig()[$position])) {
+            $callbacks[] = ['do' => $event->getConfig()[$position] ];
+        }
+
+        // Load global callbacks
+        if (isset($this->config['callbacks'][$position][$event->getTransition()]['do'])) {
+            $callbacks[] =[ 'do' => $this->config['callbacks'][$position][$event->getTransition()]['do'] ];
         }
 
         $result = true;
-        foreach ($this->config['callbacks'][$position] as &$callback) {
+
+        foreach ($callbacks as &$callback) {
             if (!$callback instanceof CallbackInterface) {
                 $callback = $this->callbackFactory->get($callback);
             }
 
             $result = call_user_func($callback, $event) && $result;
         }
+
         return $result;
+    }
+
+    /**
+     * Determines the appropriate transition configuration given the current
+     * state of the object
+     *
+     * @param  string $transition text representation of transition
+     * @return array
+     * @throws SMException will be thrown if no suitable transition can be found
+     */
+    private function getTransitionFromState( $transition )
+    {
+        $transitionConfig = $this->config['transitions'][$transition];
+
+        // We have one of two things coming in. Either it's a hash with from
+        // and to values or it's an array of hashes (which we'll need to loop
+        // through). This if statements will tell us if it's the latter
+        if (array_keys($transitionConfig) === range(0, count($transitionConfig) - 1)) {
+            foreach ($transitionConfig as $transition) {
+                if (in_array($this->getState(), $transition)) {
+                    return $transition;
+                }
+            }
+        }
+        elseif (isset($this->config['transitions'][$transition]['from'])) {
+            return $this->config['transitions'][$transition];
+        }
+
+        // Having looped through all the transitions of this name and not found
+        // one that starts on the objects current state throw an exception
+        throw new SMException(sprintf(
+            'Transition "%s" does not exist on object "%s" with graph "%s"',
+            $transition,
+            get_class($this->object),
+            $this->config['graph']
+        ));
     }
 }
