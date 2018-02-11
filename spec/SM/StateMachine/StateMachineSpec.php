@@ -194,6 +194,16 @@ class StateMachineSpec extends ObjectBehavior
         $this->getObject()->shouldReturn($object);
     }
 
+    function it_returns_current_config()
+    {
+        $this->getConfig()->shouldReturn($this->config);
+    }
+
+    function it_returns_current_config_item()
+    {
+        $this->getConfig('graph')->shouldReturn($this->config['graph']);
+    }
+
     function it_returns_possible_transitions($object, $callbackFactory, CallbackInterface $guard)
     {
         $object->getState()->shouldBeCalled()->willReturn('checkout');

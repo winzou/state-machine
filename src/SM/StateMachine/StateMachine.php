@@ -171,6 +171,17 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
+    public function getConfig($key = null)
+    {
+        if ($key == null) {
+            return $this->config;
+        }
+        return $this->config[$key];
+    }
+
+    /**
+     * {@inheritDoc}
+     */
     public function getGraph()
     {
         return $this->config['graph'];
