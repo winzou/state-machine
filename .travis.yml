@@ -12,7 +12,20 @@ php:
     - 5.5
     - 5.6
     - 7.0
+    - 7.1
+    - 7.2
     - hhvm
+
+matrix:
+  fast_finish: true
+  include:
+    - php: 5.3
+      dist: precise
+  allow_failures:
+    - php: 5.3
+      dist: xenial
+    - php: 5.3
+      dist: trusty
 
 before_script:
     - if [[ $TRAVIS_PHP_VERSION != hhvm ]]; then phpenv config-rm xdebug.ini; fi;
