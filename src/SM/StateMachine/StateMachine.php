@@ -83,23 +83,16 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function can($transition)
+    public function can($transitionName)
     {
-        if (!isset($this->config['transitions'][$transition])) {
-            throw new SMException(sprintf(
-                'Transition "%s" does not exist on object "%s" with graph "%s"',
-                $transition,
-                get_class($this->object),
-                $this->config['graph']
-            ));
-        }
+        $transition = $this->getTransition($transitionName);
 
-        if (!in_array($this->getState(), $this->config['transitions'][$transition]['from'])) {
+        if (!$transition) {
             return false;
         }
 
         $can = true;
-        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
+        $event = new TransitionEvent($transitionName, $this->getState(), $transition, $this);
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
 
@@ -112,23 +105,25 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function apply($transition, $soft = false)
+    public function apply($transitionName, $soft = false)
     {
-        if (!$this->can($transition)) {
+        if (!$this->can($transitionName)) {
             if ($soft) {
                 return false;
             }
 
             throw new SMException(sprintf(
                 'Transition "%s" cannot be applied on state "%s" of object "%s" with graph "%s"',
-                $transition,
+                $transitionName,
                 $this->getState(),
                 get_class($this->object),
                 $this->config['graph']
             ));
         }
 
-        $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
+        $transition = $this->getTransition($transitionName);
+
+        $event = new TransitionEvent($transitionName, $this->getState(), $transition, $this);
 
         if (null !== $this->dispatcher) {
             $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
@@ -140,7 +135,7 @@ class StateMachine implements StateMachineInterface
 
         $this->callCallbacks($event, 'before');
 
-        $this->setState($this->config['transitions'][$transition]['to']);
+        $this->setState($transition['to']);
 
         $this->callCallbacks($event, 'after');
 
@@ -231,5 +226,37 @@ class StateMachine implements StateMachineInterface
             $result = call_user_func($callback, $event) && $result;
         }
         return $result;
+    }
+
+    /**
+     * @param $transitionName
+     *
+     * @return bool|mixed
+     * @throws SMException
+     */
+    private function getTransition($transitionName)
+    {
+        if (!isset($this->config['transitions'][$transitionName])) {
+            throw new SMException(sprintf(
+                'Transition "%s" does not exist on object "%s" with graph "%s"',
+                $transitionName,
+                get_class($this->object),
+                $this->config['graph']
+            ));
+        }
+
+        $transition = $this->config['transitions'][$transitionName];
+
+        if (array_key_exists('from', $transition)) {
+            $transition = array($transition);
+        }
+
+        $state = $this->getState();
+
+        $results = array_filter($transition, function($value) use ($state) {
+            return in_array($state, $value['from']);
+        });
+
+        return count($results) > 0 ? array_shift($results) : false;
     }
 }

@@ -204,4 +204,24 @@ class StateMachineSpec extends ObjectBehavior
 
         $this->getPossibleTransitions()->shouldReturn(array('create', 'confirm'));
     }
+
+    function it_can_accept_specific_from_to_transition_mappings($object, $dispatcher, $callbackFactory, CallbackInterface $guard)
+    {
+        $transition = $this->config['transitions']['create'];
+
+        $this->config['transitions']['create'] = array(
+            $transition
+        );
+
+        $object->getState()->shouldBeCalled()->willReturn('checkout');
+        $object->setState(Argument::any())->shouldNotBeCalled();
+
+        $dispatcher->dispatch(SMEvents::TEST_TRANSITION, Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled();
+
+        $callbackFactory->get($this->config['callbacks']['guard']['guard-confirm'])->shouldBeCalled()->willReturn($guard);
+
+        $guard->__invoke(Argument::type('SM\\Event\\TransitionEvent'))->shouldBeCalled()->willReturn(true);
+
+        $this->can('create')->shouldReturn(true);
+    }
 }

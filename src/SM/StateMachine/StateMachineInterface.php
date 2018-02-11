@@ -18,25 +18,25 @@ interface StateMachineInterface
     /**
      * Can the transition be applied on the underlying object
      *
-     * @param string $transition
+     * @param string $transitionName
      *
      * @return bool
      *
      * @throws SMException If transition doesn't exist
      */
-    public function can($transition);
+    public function can($transitionName);
 
     /**
      * Applies the transition on the underlying object
      *
-     * @param string $transition Transition to apply
-     * @param bool   $soft       Soft means do nothing if transition can't be applied (no exception thrown)
+     * @param string $transitionName Transition to apply
+     * @param bool   $soft           Soft means do nothing if transition can't be applied (no exception thrown)
      *
      * @return bool If the transition has been applied or not (in case of soft apply or rejected pre transition event)
      *
      * @throws SMException If transition can't be applied or doesn't exist
      */
-    public function apply($transition, $soft = false);
+    public function apply($transitionName, $soft = false);
 
     /**
      * Returns the current state
