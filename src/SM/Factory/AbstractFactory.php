@@ -59,7 +59,20 @@ abstract class AbstractFactory implements ClearableFactoryInterface
             $graph
         ));
     }
-    
+
+    /**
+     * @return array returns available graph names
+     */
+    public function getGraphs()
+    {
+        $graphNames = [];
+
+        foreach ($this->configs as $config) {
+            $graphNames[] = $config['graph'];
+        }
+        return $graphNames;
+    }
+
     /**
      * {@inheritDoc}
      */
@@ -84,7 +97,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
 
         if (!isset($config['class'])) {
             throw new SMException(sprintf(
-               'Index "class" needed for the state machine configuration of graph "%s"',
+                'Index "class" needed for the state machine configuration of graph "%s"',
                 $config['graph']
             ));
         }
