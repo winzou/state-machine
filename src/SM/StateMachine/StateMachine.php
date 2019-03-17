@@ -72,7 +72,7 @@ class StateMachine implements StateMachineInterface
             $this->getState();
         } catch (NoSuchPropertyException $e) {
             throw new SMException(sprintf(
-               'Cannot access to configured property path "%s" on object %s with graph "%s"',
+                'Cannot access to configured property path "%s" on object %s with graph "%s"',
                 $config['property_path'],
                 get_class($object),
                 $config['graph']
@@ -185,6 +185,22 @@ class StateMachine implements StateMachineInterface
             array_keys($this->config['transitions']),
             array($this, 'can')
         );
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getPossibleNextStates()
+    {
+        $nextStates = array($this->getState());
+
+        $possibleTransitions = $this->getPossibleTransitions();
+
+        foreach ($possibleTransitions as $transition) {
+            $nextStates[] = $this->config['transitions'][$transition]['to'];
+        }
+        
+        return $nextStates;
     }
 
     /**
