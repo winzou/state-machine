@@ -7,7 +7,7 @@ use SM\StateMachine\StateMachineInterface;
 
 class TransitionEventTest extends \PHPUnit\Framework\TestCase
 {
-    /** @var StateMachineInterface&\PHPUnit\Framework\MockObject\MockObject $event */
+    /** @var StateMachineInterface&\PHPUnit\Framework\MockObject\MockObject */
     protected $stateMachine;
 
     /** @var TransitionEvent */
