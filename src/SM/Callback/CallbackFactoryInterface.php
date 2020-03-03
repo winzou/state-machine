@@ -16,9 +16,9 @@ interface CallbackFactoryInterface
     /**
      * Return an instance of CallbackInterface loaded with the given $specs
      *
-     * @param array $specs
+     * @param array<string,string|array> $specs
      *
      * @return CallbackInterface
      */
-    public function get(array $specs);
+    public function get(array $specs): CallbackInterface;
 }

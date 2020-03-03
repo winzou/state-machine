@@ -12,8 +12,10 @@
 namespace SM\Extension\Twig;
 
 use SM\Factory\FactoryInterface;
+use Twig\Extension\AbstractExtension;
+use Twig\TwigFunction;
 
-class SMExtension extends \Twig_Extension
+class SMExtension extends AbstractExtension
 {
     /**
      * @var FactoryInterface
@@ -29,15 +31,15 @@ class SMExtension extends \Twig_Extension
     }
 
     /**
-     * @{inheritDoc}
+     * {@inheritDoc}
      */
     public function getFunctions()
     {
-        return array(
-            new \Twig_SimpleFunction('sm_can', array($this, 'can')),
-            new \Twig_SimpleFunction('sm_state', array($this, 'getState')),
-            new \Twig_SimpleFunction('sm_possible_transitions', array($this, 'getPossibleTransitions')),
-        );
+        return [
+            new TwigFunction('sm_can', [$this, 'can']),
+            new TwigFunction('sm_state', [$this, 'getState']),
+            new TwigFunction('sm_possible_transitions', [$this, 'getPossibleTransitions']),
+        ];
     }
 
     /**
@@ -47,7 +49,7 @@ class SMExtension extends \Twig_Extension
      *
      * @return bool
      */
-    public function can($object, $transition, $graph = 'default')
+    public function can(object $object, $transition, string $graph = 'default'): bool
     {
         return $this->factory->get($object, $graph)->can($transition);
     }
@@ -58,7 +60,7 @@ class SMExtension extends \Twig_Extension
      *
      * @return string
      */
-    public function getState($object, $graph = 'default')
+    public function getState(object $object, string $graph = 'default')
     {
         return $this->factory->get($object, $graph)->getState();
     }
@@ -67,18 +69,10 @@ class SMExtension extends \Twig_Extension
      * @param object $object
      * @param string $graph
      *
-     * @return array
+     * @return array<string>
      */
-    public function getPossibleTransitions($object, $graph = 'default')
+    public function getPossibleTransitions(object $object, string $graph = 'default'): array
     {
         return $this->factory->get($object, $graph)->getPossibleTransitions();
-    }
-
-    /**
-     * @{inheritDoc}
-     */
-    public function getName()
-    {
-        return 'sm';
     }
 }

@@ -11,6 +11,7 @@
 
 namespace SM\Callback;
 
+use Traversable;
 use SM\Event\TransitionEvent;
 use SM\Factory\FactoryInterface;
 
@@ -37,24 +38,24 @@ class CascadeTransitionCallback
     /**
      * Apply a transition to the object that has just undergone a transition
      *
-     * @param \Traversable|array $objects    Object or array|traversable of objects to apply the transition on
-     * @param TransitionEvent    $event      Transition event
-     * @param string|null        $transition Transition that is to be applied (if null, same as the trigger)
-     * @param string|null        $graph      Graph on which the new transition will apply (if null, same as the trigger)
-     * @param bool               $soft       If true, check if it can apply the transition first (no Exception thrown)
+     * @param iterable<object>|object $objects    Object or iterable of objects to apply the transition on
+     * @param TransitionEvent         $event      Transition event
+     * @param string|null             $transition Transition that is to be applied (if null, same as the trigger)
+     * @param string|null             $graph      Graph on which the new transition will apply (if null, same as the trigger)
+     * @param bool                    $soft       If true, check if it can apply the transition first (no Exception thrown)
      */
-    public function apply($objects, TransitionEvent $event, $transition = null, $graph = null, $soft = true)
+    public function apply($objects, TransitionEvent $event, $transition = null, ?string $graph = null, bool $soft = true): void
     {
-        if (!is_array($objects) && !$objects instanceof \Traversable) {
-            $objects = array($objects);
-        }
-
         if (null === $transition) {
             $transition = $event->getTransition();
         }
 
         if (null === $graph) {
             $graph = $event->getStateMachine()->getGraph();
+        }
+
+        if (! is_iterable($objects)) {
+            $objects = [$objects];
         }
 
         foreach ($objects as $object) {

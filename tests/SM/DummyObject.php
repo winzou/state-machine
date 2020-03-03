@@ -1,6 +1,6 @@
 <?php
 
-namespace spec\SM;
+namespace Tests\SM;
 
 class DummyObject
 {

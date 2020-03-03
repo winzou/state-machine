@@ -13,7 +13,7 @@ namespace SM\Event;
 
 abstract class SMEvents
 {
-    const PRE_TRANSITION  = 'winzou.state_machine.pre_transition';
-    const POST_TRANSITION = 'winzou.state_machine.post_transition';
-    const TEST_TRANSITION = 'winzou.state_machine.test_transition';
+    public const PRE_TRANSITION  = 'winzou.state_machine.pre_transition';
+    public const POST_TRANSITION = 'winzou.state_machine.post_transition';
+    public const TEST_TRANSITION = 'winzou.state_machine.test_transition';
 }

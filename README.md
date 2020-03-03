@@ -12,7 +12,7 @@ Installation (via composer)
 ```js
 {
     "require": {
-        "winzou/state-machine": "~0.1"
+        "winzou/state-machine": "~0.4"
     }
 }
 ```

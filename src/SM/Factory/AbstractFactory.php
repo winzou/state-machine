@@ -17,17 +17,17 @@ use SM\StateMachine\StateMachineInterface;
 abstract class AbstractFactory implements ClearableFactoryInterface
 {
     /**
-     * @var array
+     * @var array[]
      */
-    protected $configs;
+    protected $configs = [];
 
     /**
-     * @var array
+     * @var StateMachineInterface[]
      */
-    protected $stateMachines = array();
+    protected $stateMachines = [];
 
     /**
-     * @param array $configs Array of configs for the available state machines
+     * @param array[] $configs Array of configs for the available state machines
      */
     public function __construct(array $configs)
     {
@@ -39,7 +39,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function get($object, $graph = 'default')
+    public function get(object $object, string $graph = 'default'): StateMachineInterface
     {
         $hash = spl_object_hash($object);
 
@@ -63,9 +63,9 @@ abstract class AbstractFactory implements ClearableFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function clear()
+    public function clear(): void
     {
-        $this->stateMachines = array();
+        $this->stateMachines = [];
     }
 
     /**
@@ -76,7 +76,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
      *
      * @throws SMException If the index "class" is not configured
      */
-    public function addConfig(array $config, $graph = 'default')
+    public function addConfig(array $config, string $graph = 'default'): void
     {
         if (!isset($config['graph'])) {
             $config['graph'] = $graph;
@@ -95,10 +95,10 @@ abstract class AbstractFactory implements ClearableFactoryInterface
     /**
      * Create a state machine for the given object and config
      *
-     * @param       $object
-     * @param array $config
+     * @param object $object
+     * @param array  $config
      *
      * @return StateMachineInterface
      */
-    abstract protected function createStateMachine($object, array $config);
+    abstract protected function createStateMachine(object $object, array $config): StateMachineInterface;
 }

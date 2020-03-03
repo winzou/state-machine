@@ -20,7 +20,10 @@ class CallbackFactory implements CallbackFactoryInterface
      */
     protected $class;
 
-    public function __construct($class)
+    /**
+     * @param string $class
+     */
+    public function __construct(string $class)
     {
         if (!class_exists($class)) {
             throw new SMException(sprintf(
@@ -35,7 +38,7 @@ class CallbackFactory implements CallbackFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function get(array $specs)
+    public function get(array $specs): CallbackInterface
     {
         if (!isset($specs['do'])) {
             throw new SMException(sprintf(

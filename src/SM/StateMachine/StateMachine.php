@@ -11,6 +11,7 @@
 
 namespace SM\StateMachine;
 
+use SM\Callback\Callback;
 use SM\Callback\CallbackFactory;
 use SM\Callback\CallbackFactoryInterface;
 use SM\Callback\CallbackInterface;
@@ -19,7 +20,7 @@ use SM\Event\TransitionEvent;
 use SM\SMException;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class StateMachine implements StateMachineInterface
 {
@@ -31,10 +32,10 @@ class StateMachine implements StateMachineInterface
     /**
      * @var array
      */
-    protected $config;
+    protected $config = [];
 
     /**
-     * @var EventDispatcherInterface
+     * @var EventDispatcherInterface|null
      */
     protected $dispatcher;
 
@@ -44,22 +45,22 @@ class StateMachine implements StateMachineInterface
     protected $callbackFactory;
 
     /**
-     * @param object                   $object          Underlying object for the state machine
-     * @param array                    $config          Config array of the graph
-     * @param EventDispatcherInterface $dispatcher      EventDispatcher or null not to dispatch events
-     * @param CallbackFactoryInterface $callbackFactory CallbackFactory or null to use the default one
+     * @param object                        $object          Underlying object for the state machine
+     * @param array                         $config          Config array of the graph
+     * @param EventDispatcherInterface|null $dispatcher      EventDispatcher or null not to dispatch events
+     * @param CallbackFactoryInterface|null $callbackFactory CallbackFactory or null to use the default one
      *
      * @throws SMException If object doesn't have configured property path for state
      */
     public function __construct(
-        $object,
+        object $object,
         array $config,
         EventDispatcherInterface $dispatcher      = null,
         CallbackFactoryInterface $callbackFactory = null
     ) {
         $this->object          = $object;
         $this->dispatcher      = $dispatcher;
-        $this->callbackFactory = $callbackFactory ?: new CallbackFactory('SM\Callback\Callback');
+        $this->callbackFactory = $callbackFactory ?? new CallbackFactory(Callback::class);
 
         if (!isset($config['property_path'])) {
             $config['property_path'] = 'state';
@@ -83,7 +84,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function can($transition)
+    public function can($transition): bool
     {
         if (!isset($this->config['transitions'][$transition])) {
             throw new SMException(sprintf(
@@ -101,7 +102,7 @@ class StateMachine implements StateMachineInterface
         $can = true;
         $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::TEST_TRANSITION);
 
             $can = !$event->isRejected();
         }
@@ -112,7 +113,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function apply($transition, $soft = false)
+    public function apply($transition, bool $soft = false): bool
     {
         if (!$this->can($transition)) {
             if ($soft) {
@@ -131,7 +132,7 @@ class StateMachine implements StateMachineInterface
         $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
 
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::PRE_TRANSITION);
 
             if ($event->isRejected()) {
                 return false;
@@ -145,7 +146,7 @@ class StateMachine implements StateMachineInterface
         $this->callCallbacks($event, 'after');
 
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::POST_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::POST_TRANSITION);
         }
 
         return true;
@@ -156,14 +157,14 @@ class StateMachine implements StateMachineInterface
      */
     public function getState()
     {
-        $accessor = new PropertyAccessor();
+        $accessor = PropertyAccess::createPropertyAccessor();
         return $accessor->getValue($this->object, $this->config['property_path']);
     }
 
     /**
      * {@inheritDoc}
      */
-    public function getObject()
+    public function getObject(): object
     {
         return $this->object;
     }
@@ -171,7 +172,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function getGraph()
+    public function getGraph(): string
     {
         return $this->config['graph'];
     }
@@ -179,7 +180,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function getPossibleTransitions()
+    public function getPossibleTransitions(): array
     {
         return array_filter(
             array_keys($this->config['transitions']),
@@ -194,7 +195,7 @@ class StateMachine implements StateMachineInterface
      *
      * @throws SMException
      */
-    protected function setState($state)
+    protected function setState($state): void
     {
         if (!in_array($state, $this->config['states'])) {
             throw new SMException(sprintf(
@@ -205,7 +206,7 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        $accessor = new PropertyAccessor();
+        $accessor = PropertyAccess::createPropertyAccessor();
         $accessor->setValue($this->object, $this->config['property_path'], $state);
     }
 
@@ -216,7 +217,7 @@ class StateMachine implements StateMachineInterface
      * @param string $position
      * @return bool
      */
-    protected function callCallbacks(TransitionEvent $event, $position)
+    protected function callCallbacks(TransitionEvent $event, string $position): bool
     {
         if (!isset($this->config['callbacks'][$position])) {
             return true;

@@ -24,7 +24,7 @@ interface StateMachineInterface
      *
      * @throws SMException If transition doesn't exist
      */
-    public function can($transition);
+    public function can($transition): bool;
 
     /**
      * Applies the transition on the underlying object
@@ -36,7 +36,7 @@ interface StateMachineInterface
      *
      * @throws SMException If transition can't be applied or doesn't exist
      */
-    public function apply($transition, $soft = false);
+    public function apply($transition, bool $soft = false): bool;
 
     /**
      * Returns the current state
@@ -50,19 +50,19 @@ interface StateMachineInterface
      *
      * @return object
      */
-    public function getObject();
+    public function getObject(): object;
 
     /**
      * Returns the current graph
      *
      * @return string
      */
-    public function getGraph();
+    public function getGraph(): string;
 
     /**
      * Returns the possible transitions
      *
-     * @return array
+     * @return string[]
      */
-    public function getPossibleTransitions();
+    public function getPossibleTransitions(): array;
 }

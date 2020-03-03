@@ -11,6 +11,8 @@
 
 namespace SM;
 
-class SMException extends \Exception
+use Exception;
+
+class SMException extends Exception
 {
 }

@@ -13,14 +13,14 @@ namespace SM\Callback;
 
 use SM\Event\TransitionEvent;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
-use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\PropertyAccess\PropertyAccess;
 
 class Callback implements CallbackInterface
 {
     /**
-     * @var array
+     * @var array<string,array>
      */
-    protected $specs;
+    protected $specs = [];
 
     /**
      * @var mixed
@@ -28,16 +28,16 @@ class Callback implements CallbackInterface
     protected $callable;
 
     /**
-     * @param array $specs    Specification for the Callback to be called
-     * @param mixed $callable Closure or Callable that will be called if specifications pass
+     * @param array<string,string|array> $specs    Specification for the Callback to be called
+     * @param mixed                      $callable Closure or Callable that will be called if specifications pass
      */
     public function __construct(array $specs, $callable)
     {
-        foreach (array('from', 'to', 'on', 'excluded_from', 'excluded_to', 'excluded_on') as $clause) {
+        foreach (['from', 'to', 'on', 'excluded_from', 'excluded_to', 'excluded_on'] as $clause) {
             if (!isset($specs[$clause])) {
-                $specs[$clause] = array();
+                $specs[$clause] = [];
             } elseif (!is_array($specs[$clause])) {
-                $specs[$clause] = array($specs[$clause]);
+                $specs[$clause] = [$specs[$clause]];
             }
         }
 
@@ -53,7 +53,7 @@ class Callback implements CallbackInterface
     public function call(TransitionEvent $event)
     {
         if (!isset($this->specs['args'])) {
-            $args = array($event);
+            $args = [$event];
         } else {
             $expr = new ExpressionLanguage();
             $args = array_map(
@@ -62,10 +62,10 @@ class Callback implements CallbackInterface
                         return $arg;
                     }
 
-                    return $expr->evaluate($arg, array(
+                    return $expr->evaluate($arg, [
                         'object' => $event->getStateMachine()->getObject(),
-                        'event'  => $event
-                    ));
+                        'event'  => $event,
+                    ]);
                 }, $this->specs['args']
             );
         }
@@ -83,20 +83,21 @@ class Callback implements CallbackInterface
         if ($this->isSatisfiedBy($event)) {
             return $this->call($event);
         }
+
         return true;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function isSatisfiedBy(TransitionEvent $event)
+    public function isSatisfiedBy(TransitionEvent $event): bool
     {
         $config = $event->getConfig();
 
         return
-            $this->isSatisfiedByClause('on', $event->getTransition())
-            && $this->isSatisfiedByClause('from', $event->getState())
-            && $this->isSatisfiedByClause('to', $config['to'])
+            $this->isSatisfiedByClause('on', $event->getTransition()) &&
+            $this->isSatisfiedByClause('from', $event->getState()) &&
+            $this->isSatisfiedByClause('to', $config['to'])
         ;
     }
 
@@ -106,7 +107,7 @@ class Callback implements CallbackInterface
      *
      * @return bool
      */
-    protected function isSatisfiedByClause($clause, $value)
+    protected function isSatisfiedByClause(string $clause, string $value): bool
     {
         if (0 < count($this->specs[$clause]) && !in_array($value, $this->specs[$clause])) {
             return false;
@@ -120,25 +121,29 @@ class Callback implements CallbackInterface
     }
 
     /**
-     * @param callable|array  $callable A callable or array with index 0 starting with "object" that will evaluated as a property path with "object" being the object undergoing the transition
+     * @param callable|array{object|string,string}  $callable A callable or array with index 0 starting with "object" that will evaluated as a property path with "object" being the object undergoing the transition
      * @param TransitionEvent $event
-     *
-     * @return callable
      */
-    protected function filterCallable($callable, TransitionEvent $event)
+    protected function filterCallable($callable, TransitionEvent $event): callable
     {
-        if (is_array($callable) && isset($callable[0]) && is_string($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
-            $object = $event->getStateMachine()->getObject();
-
-            // callable could be "object.property" and not just "object", so we evaluate the "property" path
-            if ('object' !== $callable[0]) {
-                $accessor = new PropertyAccessor();
-                $object = $accessor->getValue($object, substr($callable[0], 7));
-            }
-
-            return array($object, $callable[1]);
+        if (!is_array($callable)) {
+            return $callable;
         }
 
-        return $callable;
+        [$class, $method] = $callable;
+
+        if (!is_string($class) || 'object' !== substr($class, 0, 6)) {
+            return $callable;
+        }
+
+        $object = $event->getStateMachine()->getObject();
+
+        // callable could be "object.property" and not just "object", so we evaluate the "property" path
+        if ('object' !== $class) {
+            $accessor = PropertyAccess::createPropertyAccessor();
+            $object = $accessor->getValue($object, substr($class, 7));
+        }
+
+        return [$object, $method];
     }
 }
