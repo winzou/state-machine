@@ -90,7 +90,7 @@ class StateMachine implements StateMachineInterface
                 'Transition "%s" does not exist on object "%s" with graph "%s"',
                 $transition,
                 get_class($this->object),
-                $this->config['graph']
+                $this->getGraph()
             ));
         }
 
@@ -124,7 +124,7 @@ class StateMachine implements StateMachineInterface
                 $transition,
                 $this->getState(),
                 get_class($this->object),
-                $this->config['graph']
+                $this->getGraph()
             ));
         }
 
@@ -201,7 +201,7 @@ class StateMachine implements StateMachineInterface
                 'Cannot set the state to "%s" to object "%s" with graph %s because it is not pre-defined.',
                 $state,
                 get_class($this->object),
-                $this->config['graph']
+                $this->getGraph()
             ));
         }
 
