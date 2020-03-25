@@ -94,7 +94,7 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        if (!in_array($this->getState(), $this->config['transitions'][$transition]['from'])) {
+        if (!in_array($this->getState(), $this->config['transitions'][$transition]['from'], true)) {
             return false;
         }
 
@@ -196,7 +196,7 @@ class StateMachine implements StateMachineInterface
      */
     protected function setState($state)
     {
-        if (!in_array($state, $this->config['states'])) {
+        if (!in_array($state, $this->config['states'], true)) {
             throw new SMException(sprintf(
                 'Cannot set the state to "%s" to object "%s" with graph %s because it is not pre-defined.',
                 $state,
