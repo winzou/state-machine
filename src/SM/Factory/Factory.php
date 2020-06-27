@@ -13,17 +13,19 @@ namespace SM\Factory;
 
 use SM\Callback\CallbackFactoryInterface;
 use SM\SMException;
+use SM\StateMachine\StateMachine;
+use SM\StateMachine\StateMachineInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class Factory extends AbstractFactory
 {
     /**
-     * @var EventDispatcherInterface
+     * @var ?EventDispatcherInterface
      */
     protected $dispatcher;
 
     /**
-     * @var CallbackFactoryInterface
+     * @var ?CallbackFactoryInterface
      */
     protected $callbackFactory;
 
@@ -41,10 +43,10 @@ class Factory extends AbstractFactory
     /**
      * {@inheritDoc}
      */
-    protected function createStateMachine($object, array $config)
+    protected function createStateMachine($object, array $config): StateMachineInterface
     {
         if (!isset($config['state_machine_class'])) {
-            $class = 'SM\\StateMachine\\StateMachine';
+            $class = StateMachine::class;
         } elseif (class_exists($config['state_machine_class'])) {
             $class = $config['state_machine_class'];
         } else {

@@ -11,36 +11,28 @@
 
 namespace SM\StateMachine;
 
+use SM\Callback\Callback;
 use SM\Callback\CallbackFactory;
 use SM\Callback\CallbackFactoryInterface;
 use SM\Callback\CallbackInterface;
 use SM\Event\SMEvents;
 use SM\Event\TransitionEvent;
 use SM\SMException;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
-use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
 class StateMachine implements StateMachineInterface
 {
-    /**
-     * @var object
-     */
+    /** @var object */
     protected $object;
 
-    /**
-     * @var array
-     */
-    protected $config;
+    /** @var array */
+    protected $config = [];
 
-    /**
-     * @var EventDispatcherInterface
-     */
+    /** @var ?EventDispatcherInterface */
     protected $dispatcher;
 
-    /**
-     * @var CallbackFactoryInterface
-     */
+    /** @var CallbackFactoryInterface */
     protected $callbackFactory;
 
     /**
@@ -59,7 +51,7 @@ class StateMachine implements StateMachineInterface
     ) {
         $this->object          = $object;
         $this->dispatcher      = $dispatcher;
-        $this->callbackFactory = $callbackFactory ?: new CallbackFactory('SM\Callback\Callback');
+        $this->callbackFactory = $callbackFactory ?: new CallbackFactory(Callback::class);
 
         if (!isset($config['property_path'])) {
             $config['property_path'] = 'state';
@@ -68,11 +60,9 @@ class StateMachine implements StateMachineInterface
         $this->config = $config;
 
         // Test if the given object has the given state property path
-        try {
-            $this->getState();
-        } catch (NoSuchPropertyException $e) {
+        if (!$this->hasObjectProperty($object, $config['property_path'])) {
             throw new SMException(sprintf(
-               'Cannot access to configured property path "%s" on object %s with graph "%s"',
+                'Cannot access to configured property path "%s" on object %s with graph "%s"',
                 $config['property_path'],
                 get_class($object),
                 $config['graph']
@@ -83,7 +73,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function can($transition)
+    public function can(string $transition): bool
     {
         if (!isset($this->config['transitions'][$transition])) {
             throw new SMException(sprintf(
@@ -101,7 +91,7 @@ class StateMachine implements StateMachineInterface
         $can = true;
         $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::TEST_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::TEST_TRANSITION);
 
             $can = !$event->isRejected();
         }
@@ -112,7 +102,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function apply($transition, $soft = false)
+    public function apply(string $transition, $soft = false): bool
     {
         if (!$this->can($transition)) {
             if ($soft) {
@@ -131,7 +121,7 @@ class StateMachine implements StateMachineInterface
         $event = new TransitionEvent($transition, $this->getState(), $this->config['transitions'][$transition], $this);
 
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::PRE_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::PRE_TRANSITION);
 
             if ($event->isRejected()) {
                 return false;
@@ -145,7 +135,7 @@ class StateMachine implements StateMachineInterface
         $this->callCallbacks($event, 'after');
 
         if (null !== $this->dispatcher) {
-            $this->dispatcher->dispatch(SMEvents::POST_TRANSITION, $event);
+            $this->dispatcher->dispatch($event, SMEvents::POST_TRANSITION);
         }
 
         return true;
@@ -154,7 +144,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function getState()
+    public function getState(): string
     {
         $accessor = new PropertyAccessor();
         return $accessor->getValue($this->object, $this->config['property_path']);
@@ -171,7 +161,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function getGraph()
+    public function getGraph(): string
     {
         return $this->config['graph'];
     }
@@ -179,7 +169,7 @@ class StateMachine implements StateMachineInterface
     /**
      * {@inheritDoc}
      */
-    public function getPossibleTransitions()
+    public function getPossibleTransitions(): array
     {
         return array_filter(
             array_keys($this->config['transitions']),
@@ -194,7 +184,7 @@ class StateMachine implements StateMachineInterface
      *
      * @throws SMException
      */
-    protected function setState($state)
+    protected function setState($state): void
     {
         if (!in_array($state, $this->config['states'], true)) {
             throw new SMException(sprintf(
@@ -211,12 +201,8 @@ class StateMachine implements StateMachineInterface
 
     /**
      * Builds and calls the defined callbacks
-     *
-     * @param TransitionEvent $event
-     * @param string $position
-     * @return bool
      */
-    protected function callCallbacks(TransitionEvent $event, $position)
+    protected function callCallbacks(TransitionEvent $event, string $position): bool
     {
         if (!isset($this->config['callbacks'][$position])) {
             return true;
@@ -231,5 +217,10 @@ class StateMachine implements StateMachineInterface
             $result = call_user_func($callback, $event) && $result;
         }
         return $result;
+    }
+
+    protected function hasObjectProperty($object, string $property): bool
+    {
+        return (new PropertyAccessor())->isReadable($object, $property);
     }
 }

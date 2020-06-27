@@ -31,5 +31,5 @@ interface CallbackInterface
      *
      * @return bool
      */
-    public function isSatisfiedBy(TransitionEvent $event);
+    public function isSatisfiedBy(TransitionEvent $event): bool;
 }

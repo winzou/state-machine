@@ -11,6 +11,8 @@
 
 namespace SM\Callback;
 
+use SM\SMException;
+
 interface CallbackFactoryInterface
 {
     /**
@@ -19,6 +21,8 @@ interface CallbackFactoryInterface
      * @param array $specs
      *
      * @return CallbackInterface
+     *
+     * @throws SMException
      */
-    public function get(array $specs);
+    public function get(array $specs): CallbackInterface;
 }

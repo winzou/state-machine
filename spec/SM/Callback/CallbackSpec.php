@@ -4,6 +4,7 @@ namespace spec\SM\Callback;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use SM\Callback\Callback;
 use SM\Event\TransitionEvent;
 use SM\StateMachine\StateMachineInterface;
 
@@ -22,7 +23,7 @@ class CallbackSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('SM\Callback\Callback');
+        $this->shouldHaveType(Callback::class);
     }
 
     function it_satisfies_simple_on(TransitionEvent $event)

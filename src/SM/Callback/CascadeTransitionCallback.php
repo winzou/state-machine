@@ -21,14 +21,9 @@ use SM\Factory\FactoryInterface;
  */
 class CascadeTransitionCallback
 {
-    /**
-     * @var FactoryInterface
-     */
+    /** @var FactoryInterface */
     protected $factory;
 
-    /**
-     * @param FactoryInterface $factory
-     */
     public function __construct(FactoryInterface $factory)
     {
         $this->factory = $factory;
@@ -37,15 +32,17 @@ class CascadeTransitionCallback
     /**
      * Apply a transition to the object that has just undergone a transition
      *
-     * @param \Traversable|array $objects    Object or array|traversable of objects to apply the transition on
+     * @param iterable|array     $objects    Object or array|iterable of objects to apply the transition on
      * @param TransitionEvent    $event      Transition event
      * @param string|null        $transition Transition that is to be applied (if null, same as the trigger)
      * @param string|null        $graph      Graph on which the new transition will apply (if null, same as the trigger)
      * @param bool               $soft       If true, check if it can apply the transition first (no Exception thrown)
+     *
+     * @throws \SM\SMException
      */
-    public function apply($objects, TransitionEvent $event, $transition = null, $graph = null, $soft = true)
+    public function apply($objects, TransitionEvent $event, string $transition = null, string $graph = null, bool $soft = true): void
     {
-        if (!is_array($objects) && !$objects instanceof \Traversable) {
+        if (!is_iterable($objects)) {
             $objects = array($objects);
         }
 
