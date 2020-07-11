@@ -169,7 +169,7 @@ class StateMachineSpec extends ObjectBehavior
 
         $dispatcher->dispatch(Argument::any())->shouldNotBeCalled();
 
-        $this->apply('confirm', true);
+        $this->apply('confirm', array(), true);
     }
 
     function it_throws_an_exception_if_transition_doesnt_exist_on_apply()

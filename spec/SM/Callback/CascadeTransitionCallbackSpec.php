@@ -26,7 +26,7 @@ class CascadeTransitionCallbackSpec extends ObjectBehavior
         $factory->get($object, 'graph')->willReturn($sm);
 
         $sm->can('transition')->willReturn(true);
-        $sm->apply('transition', true)->shouldBeCalled();
+        $sm->apply('transition', array(), true)->shouldBeCalled();
 
         $this->apply($object, $event, 'transition', 'graph');
     }
@@ -45,7 +45,7 @@ class CascadeTransitionCallbackSpec extends ObjectBehavior
         $factory->get($object, 'graph')->willReturn($sm1);
 
         $sm1->can('transition')->willReturn(true);
-        $sm1->apply('transition', true)->shouldBeCalled();
+        $sm1->apply('transition', array(), true)->shouldBeCalled();
 
         $this->apply($object, $event, 'transition');
     }
@@ -65,7 +65,7 @@ class CascadeTransitionCallbackSpec extends ObjectBehavior
         $factory->get($object, 'graph')->willReturn($sm1);
 
         $sm1->can('transition')->willReturn(true);
-        $sm1->apply('transition', true)->shouldBeCalled();
+        $sm1->apply('transition', array(), true)->shouldBeCalled();
 
         $this->apply($object, $event);
     }
