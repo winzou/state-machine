@@ -65,4 +65,11 @@ interface StateMachineInterface
      * @return array
      */
     public function getPossibleTransitions();
+
+    /**
+     * Returns the possible states
+     *
+     * @return array
+     */
+    public function getPossibleStates();
 }
