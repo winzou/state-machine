@@ -11,6 +11,7 @@
 
 namespace SM\Factory;
 
+use SM\SMException;
 use SM\StateMachine\StateMachineInterface;
 
 interface FactoryInterface
@@ -22,6 +23,8 @@ interface FactoryInterface
      * @param string $graph
      *
      * @return StateMachineInterface
+     *
+     * @throws SMException
      */
-    public function get($object, $graph = 'default');
+    public function get($object, string $graph = 'default'): StateMachineInterface;
 }

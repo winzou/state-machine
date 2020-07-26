@@ -12,7 +12,7 @@
 namespace SM\Event;
 
 use SM\StateMachine\StateMachineInterface;
-use Symfony\Component\EventDispatcher\Event;
+use Symfony\Contracts\EventDispatcher\Event;
 
 class TransitionEvent extends Event
 {
@@ -47,7 +47,7 @@ class TransitionEvent extends Event
      * @param array                 $config       Configuration of the transition
      * @param StateMachineInterface $stateMachine State machine
      */
-    public function __construct($transition, $fromState, array $config, StateMachineInterface $stateMachine)
+    public function __construct(string $transition, string $fromState, array $config, StateMachineInterface $stateMachine)
     {
         $this->transition   = $transition;
         $this->fromState    = $fromState;
@@ -55,50 +55,32 @@ class TransitionEvent extends Event
         $this->stateMachine = $stateMachine;
     }
 
-    /**
-     * @return string
-     */
-    public function getTransition()
+    public function getTransition(): string
     {
         return $this->transition;
     }
 
-    /**
-     * @return array
-     */
-    public function getConfig()
+    public function getConfig(): array
     {
         return $this->config;
     }
 
-    /**
-     * @return StateMachineInterface
-     */
-    public function getStateMachine()
+    public function getStateMachine(): StateMachineInterface
     {
         return $this->stateMachine;
     }
 
-    /**
-     * @return string
-     */
-    public function getState()
+    public function getState(): string
     {
         return $this->fromState;
     }
 
-    /**
-     * @param bool $reject
-     */
-    public function setRejected($reject = true)
+    public function setRejected(bool $reject = true): void
     {
         $this->rejected = (bool) $reject;
     }
 
-    /**
-     * @return bool
-     */
-    public function isRejected()
+    public function isRejected(): bool
     {
         return $this->rejected;
     }

@@ -16,5 +16,5 @@ interface ClearableFactoryInterface extends FactoryInterface
     /**
      * Clears all state machines from the factory
      */
-    public function clear();
+    public function clear(): void;
 }

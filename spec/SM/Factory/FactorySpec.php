@@ -3,16 +3,18 @@
 namespace spec\SM\Factory;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use SM\Callback\CallbackFactoryInterface;
+use SM\Factory\Factory;
+use SM\SMException;
+use SM\StateMachine\StateMachine;
 use spec\SM\DummyObject;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 
 class FactorySpec extends ObjectBehavior
 {
     protected $configs = array(
-        'graph1' => array('state_machine_class' => 'SM\\StateMachine\\StateMachine', 'class' => 'spec\\SM\\DummyObject'),
-        'graph2' => array('class' => 'spec\\SM\\DummyObject'),
+        'graph1' => array('state_machine_class' => StateMachine::class, 'class' => DummyObject::class),
+        'graph2' => array('class' => DummyObject::class),
     );
 
     function let(EventDispatcherInterface $dispatcher, CallbackFactoryInterface $callbackFactory)
@@ -22,7 +24,7 @@ class FactorySpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('SM\Factory\Factory');
+        $this->shouldHaveType(Factory::class);
     }
 
     function it_creates_statemachine(DummyObject $object)
@@ -34,11 +36,11 @@ class FactorySpec extends ObjectBehavior
 
     function it_creates_statemachine_with_default_class(DummyObject $object)
     {
-        $this->get($object, 'graph2')->shouldReturnAnInstanceOf('SM\\StateMachine\\StateMachine');
+        $this->get($object, 'graph2')->shouldReturnAnInstanceOf(StateMachine::class);
     }
 
     function it_throws_exception_when_configuration_doesnt_exist(DummyObject $object)
     {
-        $this->shouldThrow('SM\\SMException')->during('get', array($object, 'non-existing-graph'));
+        $this->shouldThrow(SMException::class)->during('get', array($object, 'non-existing-graph'));
     }
 }

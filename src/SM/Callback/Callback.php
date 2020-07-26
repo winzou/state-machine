@@ -89,7 +89,7 @@ class Callback implements CallbackInterface
     /**
      * {@inheritDoc}
      */
-    public function isSatisfiedBy(TransitionEvent $event)
+    public function isSatisfiedBy(TransitionEvent $event): bool
     {
         $config = $event->getConfig();
 
@@ -106,7 +106,7 @@ class Callback implements CallbackInterface
      *
      * @return bool
      */
-    protected function isSatisfiedByClause($clause, $value)
+    protected function isSatisfiedByClause(string $clause, string $value): bool
     {
         if (0 < count($this->specs[$clause]) && !in_array($value, $this->specs[$clause])) {
             return false;
@@ -125,7 +125,7 @@ class Callback implements CallbackInterface
      *
      * @return callable
      */
-    protected function filterCallable($callable, TransitionEvent $event)
+    protected function filterCallable($callable, TransitionEvent $event): callable
     {
         if (is_array($callable) && isset($callable[0]) && is_string($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
             $object = $event->getStateMachine()->getObject();

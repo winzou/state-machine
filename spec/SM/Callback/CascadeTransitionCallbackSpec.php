@@ -4,6 +4,7 @@ namespace spec\SM\Callback;
 
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
+use SM\Callback\CascadeTransitionCallback;
 use SM\Event\TransitionEvent;
 use SM\Factory\FactoryInterface;
 use SM\StateMachine\StateMachineInterface;
@@ -18,7 +19,7 @@ class CascadeTransitionCallbackSpec extends ObjectBehavior
 
     function it_is_initializable()
     {
-        $this->shouldHaveType('SM\Callback\CascadeTransitionCallback');
+        $this->shouldHaveType(CascadeTransitionCallback::class);
     }
 
     function it_applies($factory, TransitionEvent $event, DummyObject $object, StateMachineInterface $sm)

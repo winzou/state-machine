@@ -16,18 +16,16 @@ use SM\StateMachine\StateMachineInterface;
 
 abstract class AbstractFactory implements ClearableFactoryInterface
 {
-    /**
-     * @var array
-     */
-    protected $configs;
+    /** @var array */
+    protected $configs = [];
 
-    /**
-     * @var array
-     */
-    protected $stateMachines = array();
+    /** @var StateMachineInterface[] */
+    protected $stateMachines = [];
 
     /**
      * @param array $configs Array of configs for the available state machines
+     *
+     * @throws SMException
      */
     public function __construct(array $configs)
     {
@@ -39,7 +37,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function get($object, $graph = 'default')
+    public function get($object, string $graph = 'default'): StateMachineInterface
     {
         $hash = spl_object_hash($object);
 
@@ -63,7 +61,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
     /**
      * {@inheritDoc}
      */
-    public function clear()
+    public function clear(): void
     {
         $this->stateMachines = array();
     }
@@ -76,7 +74,7 @@ abstract class AbstractFactory implements ClearableFactoryInterface
      *
      * @throws SMException If the index "class" is not configured
      */
-    public function addConfig(array $config, $graph = 'default')
+    public function addConfig(array $config, string $graph = 'default'): void
     {
         if (!isset($config['graph'])) {
             $config['graph'] = $graph;
@@ -99,6 +97,8 @@ abstract class AbstractFactory implements ClearableFactoryInterface
      * @param array $config
      *
      * @return StateMachineInterface
+     *
+     * @throws SMException
      */
-    abstract protected function createStateMachine($object, array $config);
+    abstract protected function createStateMachine($object, array $config): StateMachineInterface;
 }
