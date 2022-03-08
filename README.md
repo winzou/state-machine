@@ -4,7 +4,7 @@ A very lightweight yet powerful PHP state machine
 Define your states, define your transitions and your callbacks: we do the rest.
 The era of hard-coded states is over!
 
-[![Build Status](https://travis-ci.org/winzou/state-machine.svg?branch=master)](https://travis-ci.org/winzou/state-machine)
+[![Build](https://github.com/winzou/state-machine/actions/workflows/build.yml/badge.svg?branch=master)](https://github.com/winzou/state-machine/actions/workflows/build.yml)
 
 Installation (via composer)
 ---------------
