@@ -22,7 +22,7 @@
         "twig/twig": "Access the state machine in your twig templates (^2.10|^3.0)"
     },
     "require-dev": {
-        "phpspec/phpspec": "^5.0|^6.0|^7.1",
+        "sylius/phpspec": "^5.0|^6.0|^7.1",
         "twig/twig": "^2.10|^3.0"
     },
     "autoload": {
