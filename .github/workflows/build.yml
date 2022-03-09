@@ -17,16 +17,10 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: ["7.2", "7.3", "7.4", "8.0", "8.1"]
-                symfony: ["~4.3", "~4.4", "~5.1", "~5.2", "~5.3", "~5.4"]
+                php: ["7.4", "8.0", "8.1"]
+                symfony: ["~4.4", "~5.4"]
 
                 include:
-                    - php: "7.1"
-                      symfony: "~4.3"
-
-                    - php: "7.1"
-                      symfony: "~4.4"
-
                     - php: "8.0"
                       symfony: "~6.0"
 
