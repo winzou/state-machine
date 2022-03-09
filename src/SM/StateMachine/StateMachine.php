@@ -35,6 +35,9 @@ class StateMachine implements StateMachineInterface
     /** @var CallbackFactoryInterface */
     protected $callbackFactory;
 
+    /** @var ?string */
+    protected $enumClass;
+
     /**
      * @param object                   $object          Underlying object for the state machine
      * @param array                    $config          Config array of the graph
@@ -58,6 +61,8 @@ class StateMachine implements StateMachineInterface
         }
 
         $this->config = $config;
+
+        $this->setEnumClass(isset($config['enumClass']) ? $config['enumClass'] : null);
 
         // Test if the given object has the given state property path
         if (!$this->hasObjectProperty($object, $config['property_path'])) {
@@ -147,7 +152,13 @@ class StateMachine implements StateMachineInterface
     public function getState(): string
     {
         $accessor = new PropertyAccessor();
-        return $accessor->getValue($this->object, $this->config['property_path']);
+        $state = $accessor->getValue($this->object, $this->config['property_path']);
+
+        if(($enumClass = $this->getEnumClass()) && is_a($state,$enumClass,true)){
+            return (string) $state->value;
+        }
+
+        return $state;
     }
 
     /**
@@ -195,6 +206,10 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
+        if($enumClass = $this->getEnumClass()){
+            $state = $enumClass::from($state);
+        }
+
         $accessor = new PropertyAccessor();
         $accessor->setValue($this->object, $this->config['property_path'], $state);
     }
@@ -222,5 +237,20 @@ class StateMachine implements StateMachineInterface
     protected function hasObjectProperty($object, string $property): bool
     {
         return (new PropertyAccessor())->isReadable($object, $property);
+    }
+
+    public function getEnumClass() : ?string
+    {
+        return $this->enumClass;
+    }
+
+    public function setEnumClass(?string $class) : self
+    {
+        if($class && !is_a($class,\BackedEnum::class,true)){
+            throw new SMException(sprintf('Enum class should be a BackedEnum'));
+        }
+
+        $this->enumClass = $class;
+        return $this;
     }
 }

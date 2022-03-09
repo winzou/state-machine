@@ -10,6 +10,7 @@ use SM\Event\SMEvents;
 use SM\Event\TransitionEvent;
 use SM\SMException;
 use SM\StateMachine\StateMachine;
+use spec\SM\DummyEnumState;
 use spec\SM\DummyObject;
 use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 
@@ -208,4 +209,27 @@ class StateMachineSpec extends ObjectBehavior
 
         $this->getPossibleTransitions()->shouldReturn(array('create', 'confirm'));
     }
+
+
+
+    function it_should_return_back_enum_value($object)
+    {
+        $object->getState()->shouldBeCalled()->willReturn(DummyEnumState::Checkout);
+        $this->setEnumClass(DummyEnumState::class);
+        $this->getState()->shouldReturn(DummyEnumState::Checkout->value);
+    }
+
+    function it_throws_exeception_if_enum_class_in_not_backed($object)
+    {
+        $this->shouldThrow(SMException::class)->during('setEnumClass', array('dummy_string'));
+    }
+
+    function it_not_throws_an_exception_during_apply_when_state_is_back_enum($object, $callbackFactory, CallbackInterface $guard, $dispatcher)
+    {
+        $object->getState()->shouldBeCalled()->willReturn(DummyEnumState::Checkout);
+        $this->setEnumClass(DummyEnumState::class);
+        $dispatcher->dispatch(Argument::any())->shouldNotBeCalled();
+        $this->shouldNotThrow(SMException::class)->during('apply',array(DummyEnumState::Pending));
+    }
+
 }
