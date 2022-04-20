@@ -244,13 +244,14 @@ class StateMachine implements StateMachineInterface
         return $this->enumClass;
     }
 
-    public function setEnumClass(?string $class) : self
+    public function setEnumClass(?string $class): self
     {
-        if($class && !is_a($class,\BackedEnum::class,true)){
-            throw new SMException(sprintf('Enum class should be a BackedEnum'));
+        if ($class && !is_a($class, \BackedEnum::class, true)) {
+            throw new SMException('Enum class must be a BackedEnum');
         }
 
         $this->enumClass = $class;
+        
         return $this;
     }
 }
