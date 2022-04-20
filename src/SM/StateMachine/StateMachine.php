@@ -206,7 +206,7 @@ class StateMachine implements StateMachineInterface
             ));
         }
 
-        if($enumClass = $this->getEnumClass()){
+        if ($enumClass = $this->getEnumClass()) {
             $state = $enumClass::from($state);
         }
 
