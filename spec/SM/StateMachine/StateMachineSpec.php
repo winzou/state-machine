@@ -220,7 +220,8 @@ class StateMachineSpec extends ObjectBehavior
         $object->getState()->shouldBeCalled()->willReturn(\spec\SM\DummyEnumState::Checkout);
         $this->setEnumClass(\spec\SM\DummyEnumState::class);
         $state = \spec\SM\DummyEnumState::Checkout;
-        if(property_exists($state,'value')){
+
+        if (property_exists($state, 'value')) {
             $this->getState()->shouldReturn($state->value);
         }
     }
