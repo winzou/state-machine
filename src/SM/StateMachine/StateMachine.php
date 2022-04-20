@@ -154,7 +154,7 @@ class StateMachine implements StateMachineInterface
         $accessor = new PropertyAccessor();
         $state = $accessor->getValue($this->object, $this->config['property_path']);
 
-        if(($enumClass = $this->getEnumClass()) && is_a($state,$enumClass,true)){
+        if (($enumClass = $this->getEnumClass()) && is_a($state, $enumClass, true)) {
             return (string) $state->value;
         }
 
