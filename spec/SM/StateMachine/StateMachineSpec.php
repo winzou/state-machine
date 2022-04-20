@@ -244,7 +244,7 @@ class StateMachineSpec extends ObjectBehavior
         $object->getState()->shouldBeCalled()->willReturn(\spec\SM\DummyEnumState::Checkout);
         $this->setEnumClass(\spec\SM\DummyEnumState::class);
         $dispatcher->dispatch(Argument::any())->shouldNotBeCalled();
-        $this->shouldNotThrow(SMException::class)->during('apply',array(\spec\SM\DummyEnumState::Pending));
+        $this->shouldNotThrow(SMException::class)->during('apply', array(\spec\SM\DummyEnumState::Pending));
     }
 
 }
