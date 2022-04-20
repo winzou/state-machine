@@ -62,7 +62,7 @@ class StateMachine implements StateMachineInterface
 
         $this->config = $config;
 
-        $this->setEnumClass(isset($config['enumClass']) ? $config['enumClass'] : null);
+        $this->setEnumClass($config['enumClass'] ?? null);
 
         // Test if the given object has the given state property path
         if (!$this->hasObjectProperty($object, $config['property_path'])) {
