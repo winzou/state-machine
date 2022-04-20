@@ -2,6 +2,7 @@
 
 namespace spec\SM\StateMachine;
 
+use PhpSpec\Exception\Example\SkippingException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use SM\Callback\CallbackFactoryInterface;
@@ -237,9 +238,7 @@ class StateMachineSpec extends ObjectBehavior
 
     function it_not_throws_an_exception_during_apply_when_state_is_back_enum($object, $callbackFactory, CallbackInterface $guard, $dispatcher)
     {
-        if (version_compare(PHP_VERSION, '8.1', '<')) {
-            return;
-        }
+        $this->checkPhpMinimumVersion('8.1');
 
         $object->getState()->shouldBeCalled()->willReturn(\spec\SM\DummyEnumState::Checkout);
         $this->setEnumClass(\spec\SM\DummyEnumState::class);
@@ -247,4 +246,10 @@ class StateMachineSpec extends ObjectBehavior
         $this->shouldNotThrow(SMException::class)->during('apply', array(\spec\SM\DummyEnumState::Pending));
     }
 
+    private function checkPhpMinimumVersion($version)
+    {
+        if (version_compare(PHP_VERSION, $version, '<')) {
+            throw new SkippingException(sprintf("Minimum php version: %s", $version));
+        }
+    }
 }
