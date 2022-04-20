@@ -239,7 +239,7 @@ class StateMachine implements StateMachineInterface
         return (new PropertyAccessor())->isReadable($object, $property);
     }
 
-    public function getEnumClass() : ?string
+    public function getEnumClass(): ?string
     {
         return $this->enumClass;
     }
