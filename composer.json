@@ -14,15 +14,15 @@
     ],
     "require": {
         "php":                         "^7.4|^8.0|^8.1",
-        "symfony/event-dispatcher":    "^4.4|^5.4|^6.0",
-        "symfony/property-access":     "^4.4|^5.4|^6.0",
-        "symfony/expression-language": "^4.4|^5.4|^6.0"
+        "symfony/event-dispatcher":    "^4.4|^5.4|^6.0|^7.0",
+        "symfony/property-access":     "^4.4|^5.4|^6.0|^7.0",
+        "symfony/expression-language": "^4.4|^5.4|^6.0|^7.0"
     },
     "suggest": {
         "twig/twig": "Access the state machine in your twig templates (^2.10|^3.0)"
     },
     "require-dev": {
-        "sylius/phpspec": "^5.0|^6.0|^7.1",
+        "phpspec/phpspec": "^5.0|^6.0|^7.1",
         "twig/twig": "^2.10|^3.0"
     },
     "autoload": {
