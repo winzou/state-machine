@@ -2,6 +2,7 @@
 
 namespace spec\SM\StateMachine;
 
+use PhpSpec\Exception\Example\SkippingException;
 use PhpSpec\ObjectBehavior;
 use Prophecy\Argument;
 use SM\Callback\CallbackFactoryInterface;
@@ -207,5 +208,48 @@ class StateMachineSpec extends ObjectBehavior
         $guard->__invoke(Argument::type(TransitionEvent::class))->shouldBeCalled()->willReturn(true);
 
         $this->getPossibleTransitions()->shouldReturn(array('create', 'confirm'));
+    }
+
+
+
+    function it_should_return_back_enum_value($object)
+    {
+        if (version_compare(PHP_VERSION, '8.1', '<')) {
+            return;
+        }
+
+        $object->getState()->shouldBeCalled()->willReturn(\spec\SM\DummyEnumState::Checkout);
+        $this->setEnumClass(\spec\SM\DummyEnumState::class);
+        $state = \spec\SM\DummyEnumState::Checkout;
+
+        if (property_exists($state, 'value')) {
+            $this->getState()->shouldReturn($state->value);
+        }
+    }
+
+    function it_throws_exeception_if_enum_class_in_not_backed($object)
+    {
+        if (version_compare(PHP_VERSION, '8.1', '<')) {
+            return;
+        }
+
+        $this->shouldThrow(SMException::class)->during('setEnumClass', array('dummy_string'));
+    }
+
+    function it_not_throws_an_exception_during_apply_when_state_is_back_enum($object, $callbackFactory, CallbackInterface $guard, $dispatcher)
+    {
+        $this->checkPhpMinimumVersion('8.1');
+
+        $object->getState()->shouldBeCalled()->willReturn(\spec\SM\DummyEnumState::Checkout);
+        $this->setEnumClass(\spec\SM\DummyEnumState::class);
+        $dispatcher->dispatch(Argument::any())->shouldNotBeCalled();
+        $this->shouldNotThrow(SMException::class)->during('apply', array(\spec\SM\DummyEnumState::Pending));
+    }
+
+    private function checkPhpMinimumVersion($version)
+    {
+        if (version_compare(PHP_VERSION, $version, '<')) {
+            throw new SkippingException(sprintf("Minimum php version: %s", $version));
+        }
     }
 }
