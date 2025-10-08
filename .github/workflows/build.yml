@@ -30,6 +30,12 @@ jobs:
                     - php: "8.2"
                       symfony: "~7.0"
 
+                    - php: "8.3"
+                      symfony: "~7.0"
+
+                    - php: "8.4"
+                      symfony: "~7.0"
+
         steps:
             -
                 uses: actions/checkout@v2
