@@ -31,8 +31,8 @@ class Factory extends AbstractFactory
 
     public function __construct(
         array $configs,
-        EventDispatcherInterface $dispatcher      = null,
-        CallbackFactoryInterface $callbackFactory = null
+        ?EventDispatcherInterface $dispatcher      = null,
+        ?CallbackFactoryInterface $callbackFactory = null
     ) {
         parent::__construct($configs);
 

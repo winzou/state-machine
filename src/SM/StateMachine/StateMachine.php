@@ -36,18 +36,18 @@ class StateMachine implements StateMachineInterface
     protected $callbackFactory;
 
     /**
-     * @param object                   $object          Underlying object for the state machine
-     * @param array                    $config          Config array of the graph
-     * @param EventDispatcherInterface $dispatcher      EventDispatcher or null not to dispatch events
-     * @param CallbackFactoryInterface $callbackFactory CallbackFactory or null to use the default one
+     * @param object                        $object          Underlying object for the state machine
+     * @param array                         $config          Config array of the graph
+     * @param EventDispatcherInterface|null $dispatcher      EventDispatcher or null not to dispatch events
+     * @param CallbackFactoryInterface|null $callbackFactory CallbackFactory or null to use the default one
      *
      * @throws SMException If object doesn't have configured property path for state
      */
     public function __construct(
         $object,
         array $config,
-        EventDispatcherInterface $dispatcher      = null,
-        CallbackFactoryInterface $callbackFactory = null
+        ?EventDispatcherInterface $dispatcher      = null,
+        ?CallbackFactoryInterface $callbackFactory = null
     ) {
         $this->object          = $object;
         $this->dispatcher      = $dispatcher;
