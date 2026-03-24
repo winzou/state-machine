@@ -20,24 +20,27 @@ jobs:
                 php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
                 symfony: ["^6.0", "^7.0", "^8.0"]
 
-                include:
-                    - php: "8.0"
-                      symfony: "^6.0"
-
-                    - php: "8.1"
-                      symfony: "^6.0"
-
-                    - php: "8.2"
-                      symfony: "^7.0"
-
-                    - php: "8.3"
-                      symfony: "^7.0"
-
-                    - php: "8.4"
-                      symfony: "^7.0"
-
-                    - php: "8.5"
+                exclude:
+                    # Symfony 8.0 only supports PHP 8.5+
+                    - php: "7.4"
                       symfony: "^8.0"
+                    - php: "8.0"
+                      symfony: "^8.0"
+                    - php: "8.1"
+                      symfony: "^8.0"
+                    - php: "8.2"
+                      symfony: "^8.0"
+                    - php: "8.3"
+                      symfony: "^8.0"
+                    - php: "8.4"
+                      symfony: "^8.0"
+                    
+                    # Symfony 7.0 requires PHP 8.1+
+                    - php: "7.4"
+                      symfony: "^7.0"
+                    - php: "8.0"
+                      symfony: "^7.0"
+
 
         steps:
             -
