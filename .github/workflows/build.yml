@@ -18,9 +18,23 @@ jobs:
             fail-fast: false
             matrix:
                 php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
-                symfony: ["^6.0", "^7.0", "^8.0"]
+                symfony: ["^5.0", "^6.0", "^7.0", "^8.0"]
 
                 exclude:
+                    # Symfony 5.0 only with PHP 7.4
+                    - php: "8.0"
+                      symfony: "^5.0"
+                    - php: "8.1"
+                      symfony: "^5.0"
+                    - php: "8.2"
+                      symfony: "^5.0"
+                    - php: "8.3"
+                      symfony: "^5.0"
+                    - php: "8.4"
+                      symfony: "^5.0"
+                    - php: "8.5"
+                      symfony: "^5.0"
+
                     # Symfony 8.0 only supports PHP 8.5+
                     - php: "7.4"
                       symfony: "^8.0"
@@ -40,7 +54,12 @@ jobs:
                       symfony: "^7.0"
                     - php: "8.0"
                       symfony: "^7.0"
+                    - php: "8.1"
+                      symfony: "^7.0"
 
+                    # Additional exclusions
+                    - php: "7.4"
+                      symfony: "^6.0"
 
         steps:
             -
