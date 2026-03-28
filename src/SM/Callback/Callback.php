@@ -125,7 +125,7 @@ class Callback implements CallbackInterface
      *
      * @return callable
      */
-    protected function filterCallable($callable, TransitionEvent $event): callable
+    protected function filterCallable($callable, TransitionEvent $event)
     {
         if (is_array($callable) && isset($callable[0]) && is_string($callable[0]) && 'object' === substr($callable[0], 0, 6)) {
             $object = $event->getStateMachine()->getObject();
