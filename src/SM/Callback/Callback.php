@@ -58,7 +58,10 @@ class Callback implements CallbackInterface
             $expr = new ExpressionLanguage();
             $args = array_map(
                 function($arg) use($expr, $event) {
-                    if (!is_string($arg)) {
+                    if (
+                        !is_string($arg) ||
+                        !($this->str_starts_with($arg, 'object') || $this->str_starts_with($arg, 'event'))
+                    ) {
                         return $arg;
                     }
 
@@ -140,5 +143,14 @@ class Callback implements CallbackInterface
         }
 
         return $callable;
+    }
+
+    protected function str_starts_with(string $haystack, string $needle): bool
+    {
+        if (!function_exists('str_starts_with')) {
+            return $needle !== '' && strncmp($haystack, $needle, strlen($needle)) === 0;
+        }
+
+        return \str_starts_with($haystack, $needle);
     }
 }
