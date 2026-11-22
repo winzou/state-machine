@@ -43,4 +43,12 @@ class FactorySpec extends ObjectBehavior
     {
         $this->shouldThrow(SMException::class)->during('get', array($object, 'non-existing-graph'));
     }
+
+    function it_reuses_statemachine_for_same_object_and_graph(DummyObject $object)
+    {
+        $first = $this->get($object, 'graph2');
+        $second = $this->get($object, 'graph2');
+
+        $second->shouldBe($first);
+    }
 }

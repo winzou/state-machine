@@ -39,15 +39,15 @@ abstract class AbstractFactory implements ClearableFactoryInterface
      */
     public function get($object, string $graph = 'default'): StateMachineInterface
     {
-        $hash = spl_object_hash($object);
+        $id = spl_object_id($object);
 
-        if (isset($this->stateMachines[$hash][$graph])) {
-            return $this->stateMachines[$hash][$graph];
+        if (isset($this->stateMachines[$id][$graph])) {
+            return $this->stateMachines[$id][$graph];
         }
 
         foreach ($this->configs as $config) {
             if ($config['graph'] === $graph && $object instanceof $config['class']) {
-                return $this->stateMachines[$hash][$graph] = $this->createStateMachine($object, $config);
+                return $this->stateMachines[$id][$graph] = $this->createStateMachine($object, $config);
             }
         }
 
