@@ -17,7 +17,7 @@ jobs:
         strategy:
             fail-fast: false
             matrix:
-                php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5"]
+                php: ["7.4", "8.0", "8.1", "8.2", "8.3", "8.4", "8.5", "8.6"]
                 symfony: ["^5.0", "^6.0", "^7.0", "^8.0"]
 
                 exclude:
@@ -33,6 +33,8 @@ jobs:
                     - php: "8.4"
                       symfony: "^5.0"
                     - php: "8.5"
+                      symfony: "^5.0"
+                    - php: "8.6"
                       symfony: "^5.0"
 
                     # Symfony 8.0 only supports PHP 8.5+
@@ -83,7 +85,12 @@ jobs:
             -
                 name: Install dependencies
                 run: |
-                    composer --no-interaction --prefer-source install
+                    # phpspec does not declare PHP 8.6 support yet
+                    if [ "${{ matrix.php }}" = "8.6" ]; then
+                        composer --no-interaction --prefer-source install --ignore-platform-req=php
+                    else
+                        composer --no-interaction --prefer-source install
+                    fi
 
             -
                 name: Run tests specification

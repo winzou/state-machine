@@ -40,7 +40,7 @@ class CascadeTransitionCallback
      *
      * @throws \SM\SMException
      */
-    public function apply($objects, TransitionEvent $event, string $transition = null, string $graph = null, bool $soft = true): void
+    public function apply($objects, TransitionEvent $event, ?string $transition = null, ?string $graph = null, bool $soft = true): void
     {
         if (!is_iterable($objects)) {
             $objects = array($objects);
